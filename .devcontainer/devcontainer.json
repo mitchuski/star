@@ -1,0 +1,13 @@
+{
+  "name": "the-swordsmans-key",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "the walkable model", "onAutoForward": "openPreview" }
+  },
+  "postCreateCommand": "npm install",
+  "postStartCommand": "nohup npm run start > /tmp/swordsmans-key.log 2>&1 &",
+  "customizations": {
+    "vscode": { "extensions": [] }
+  }
+}

@@ -183,13 +183,14 @@
         <span class="lk">T∫(π) · the path</span><span class="lv">value lives on the path, not the vertex — a static vertex carries zero edge value.</span>
         <span class="lk">🪢 focus mana</span><span class="lv">poured at agentprivacy (VRC allocation) and carried in the City Key as <code>focus</code> (vertex → amount). Here it glows as an inner gold aura — heavier where you've committed more attention. The feedback between the two interfaces.</span>
         <span class="lk">off-axis</span><span class="lv">Φ<sub>v5</sub> = Φ_agent · <b>Φ_data</b> · <b>Φ_inference</b> (multiplicative — any axis → 0 collapses value). Only Φ_agent is drawn; the other two axes are off-screen.</span>
+        <span class="lk">κ · content identity</span><span class="lv">exported keys carry <code>kappa = sha256:H(canonical form)</code> — a UOR-ADDR κ-label on the sha256 axis. On import the label is <b>re-derived and checked</b>: identity is content, not location. The key is what it says, wherever it travels.</span>
       </div>
       <p class="legend-foot">Tags follow the V5.4 spec: <i>[proven] / [canon] / [conjecture]</i>. Full map in <code>MAPPING.md</code>; the model at <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a>.</p>
     </div>
   </details>
 
   <footer>
-    <b>City Key 🗝️</b> is a portable JSON: <code>{ name, palette:{cool,warm,sword,mage}, descriptions:{ "0":"…", … } }</code> — minted at agentprivacy /guide/achievements, import it here.
+    <b>City Key 🗝️</b> is a portable JSON: <code>{ name, palette:{cool,warm,sword,mage}, descriptions:{ "0":"…", … }, kappa:"sha256:…" }</code> — minted at agentprivacy /city, import it here. The <code>kappa</code> κ-label is its content identity, re-derived on every import.
     <b>Colour:</b> stratum 0 (000000) = full surveillance / transparency; stratum 6 (111111) = full sovereignty / privacy.
     <b>The wheel:</b> the comet is succ — it visits all 64 and returns to 0. <b>Live link:</b> on one origin, /star's marker lights the matching cell here, and importing a key here reflects its palette + descriptions into /star as the run hits each node.
   </footer>
@@ -262,6 +263,23 @@
     return any ? { spent, complete, at:new Date().toISOString() } : null; }
   const MOON = ['🌑','🌒','🌓','🌔','🌖','🌗','🌕'];
   const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+
+  // ---- κ-label (UOR-ADDR · sha256 axis) — identity is content, not location.
+  // canonical form: the key's JSON with keys sorted recursively, no whitespace, the kappa field excluded.
+  // re-derived and checked on import (holospaces Law L5: verification is re-derivation).
+  function canonicalJSON(v){ if(v===null||typeof v!=='object') return JSON.stringify(v);
+    if(Array.isArray(v)) return '['+v.map(canonicalJSON).join(',')+']';
+    return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonicalJSON(v[k])).join(',')+'}'; }
+  function kappaLabel(obj){ if(!(window.crypto&&crypto.subtle&&crypto.subtle.digest)) return Promise.resolve(null);
+    const c={...obj}; delete c.kappa;
+    return crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalJSON(c)))
+      .then(buf=>'sha256:'+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''))
+      .catch(()=>null); }
+  function verifyKappa(cfg){ if(!cfg||typeof cfg.kappa!=='string') return;
+    kappaLabel(cfg).then(k=>{ if(!k) return; const el=document.getElementById('keyName'); if(!el) return;
+      el.innerHTML += k===cfg.kappa
+        ? ' <span style="color:#7fffd4" title="'+esc(cfg.kappa)+'">· κ verified</span>'
+        : ' <span style="color:var(--sword)" title="expected '+esc(k)+'">· ⚠ κ mismatch</span>'; }); }
 
   function derivedReading(x){ const s=pc(x);
     if(x===0) return `<b>The unguarded origin.</b> No dimension held — fully legible, fully reconstructable. Stratum 0.`;
@@ -345,7 +363,7 @@
     setFocusData(cfg.focus);
     if(cfg.witness && cfg.witness.spent && typeof cfg.witness.spent==='object'){ for(const k in cfg.witness.spent){ const v=+k, amt=+cfg.witness.spent[k]; if(FOCUS[v]&&amt>0) VISITED[v]=Math.min(amt,FOCUS[v]); } }
     markDesc(); markFocus(); updateFocusBar();
-    setKeyName(cfg.name||'imported key', cfg.identity); renderPanel();
+    setKeyName(cfg.name||'imported key', cfg.identity); renderPanel(); verifyKappa(cfg);
     if(!fromRemote) send({config:cfg}); }
   function exportKey(){ const cfg={ name:keyName||'city key', version:1, palette:{...pal}, descriptions:{...DESC} };
     if(LIT.size) cfg.lit=[...LIT].sort((a,b)=>a-b);
@@ -353,8 +371,9 @@
     if(TRACEC) cfg.trace=TRACEC;
     if(Object.keys(FOCUS).length) cfg.focus={...FOCUS};
     const w=buildWitness(); if(w) cfg.witness=w;
-    const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}), a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='city-key.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+    kappaLabel(cfg).then(k=>{ if(k) cfg.kappa=k; // the key's content identity, stamped at export
+      const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}), a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download='city-key.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }); }
   document.getElementById('impBtn').addEventListener('click',()=>document.getElementById('impFile').click());
   document.getElementById('impFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
     const r=new FileReader(); r.onload=()=>{ try{ loadConfig(JSON.parse(r.result),false); }catch(err){ setKeyName('⚠ could not parse JSON'); } }; r.readAsText(f); e.target.value=''; });

@@ -1,105 +1,43 @@
-# Soulbis
+# The Swordsman's Key
 
-**The Swordsman builds.**
+**The walkable model.** The sovereignty lattice ℒ = ℤ/64ℤ rendered as two linked
+projections — extracted from [soulbis.com](https://soulbis.com) as a standalone,
+bootable, content-addressed environment.
 
-Soulbis is the enforcement layer of the [0xagentprivacy](https://agentprivacy.ai) architecture. Where agentprivacy.ai holds the gestalt — the Mage, the protocol, the Five Grimoires — Soulbis ships the tools that make privacy real at the boundary. Code as commitment.
+| Route | What you find there |
+|---|---|
+| `/star` | the Star-Tetrahedron Manifold — orbit the stella octangula, trace the succ cycle, walk your key's lit vertices |
+| `/lattice` | The 64 · Vertex Codex — every vertex with its stratum, ⚔️ neg, 🧙 bnot, and successor |
 
-→ [agentprivacy.ai](https://agentprivacy.ai) · [spellweb.ai](https://spellweb.ai) · [sync.soulbis.com](https://sync.soulbis.com) · [bgin.ai](https://bgin.ai)
+64 vertices · a 6-bit address across the six sovereignty dimensions · ∂M 96 edges,
+the holographic boundary (96/64 = 1.5 = P^1.5) · **value lives on the path, not the
+vertex.** The model's home: [agentprivacy.ai/model](https://agentprivacy.ai/model).
 
----
+## City Key 🗝️
 
-## Stack
+A portable JSON artifact minted at agentprivacy `/city`. Import it on either page to
+light your vertices, pour focus, walk the tour, and mint your trace back into it.
+Every exported key is stamped with a **κ-label** — `sha256:H(canonical form)`, in
+[UOR-ADDR](https://github.com/UOR-Foundation/uor-addr) style — and every import
+re-derives and checks it. *Identity is content, not location.*
 
-| Layer | Choice | Reason |
-|---|---|---|
-| Surface | Static `index.html` at repo root | Single shipped document; styles and scripts are inline or adjacent assets |
-| Styling | CSS variables in `<style>` | Token system maps to the dual-agent color semantics (see CLAUDE.md) |
-| Animation | Canvas API (native) | Wave field renderer in page scripts |
-| Fonts | Google Fonts (Cormorant · DM Sans · JetBrains Mono) | Display · Body · Technical labels |
-| Local preview | `serve` | `npm run dev` serves the repo root only — no app server |
-| Deploy | Vercel (`framework: null`) | Static output; see `vercel.json` |
+## Holospace
 
----
+This repo is packaged to be provisionable as a
+[holospace](https://github.com/Hologram-Technologies/holospaces): a bootable,
+κ-addressed environment. `.devcontainer/devcontainer.json` is the boot definition;
+the full integration mapping is in [`HOLOSPACE.md`](HOLOSPACE.md).
 
-## Dual-agent color system
-
-The visual language is not decorative — it encodes the architecture:
-
-| Color | Hex | Meaning | Nodes |
-|---|---|---|---|
-| Coral / Red | `#e8523a` | Swordsman — tools, enforcement, boundary | Soulbis, BGIN AI |
-| Cyan | `#4dd9e8` | Mage — gestalt, agents, knowledge | agentprivacy, spellweb, Soulbae |
-| White / Neutral | `#f0eee8` | Between both | Soul Sync, Research Letters |
-| Navy | `#080c20` | The gap itself | Background |
-
-This system must be preserved. Every new section or node should declare which side of the architecture it represents and use the corresponding color token / modifier class.
-
----
-
-## Project structure
-
-```
-soulbis/
-├── index.html          # Canonical site — all sections, <style>, and inline scripts
-├── star/               # /star — Star-Tetrahedron Manifold (3D, three.js bundled in star/assets/)
-├── lattice/            # /lattice — The 64 · Vertex Codex (self-contained, no bundle)
-├── public/             # Images and static assets (paths referenced from index.html)
-├── scripts/
-│   └── verify-static.cjs   # Used by npm run build (CI sanity check)
-├── vercel.json         # Static deploy — framework preset disabled
-└── package.json        # devDependencies: serve only
-
-# /star and /lattice are the Swordsman's Key system: import/export a portable JSON
-# (palette + 64 vertex descriptions) authored on the agentprivacy.ai side. The two
-# pages live-link over BroadcastChannel('agentprivacy-succ') when same-origin.
-```
-
----
-
-## Getting started
+## Run
 
 ```bash
-# Clone
-git clone https://github.com/mitchuski/soulbis
-cd soulbis
-
-# Install
 npm install
-
-# Dev (static site — repo root)
-npm run dev
-
-# Sanity check (index.html present)
-npm run build
+npm run dev    # → http://localhost:8000
 ```
 
-Open [http://localhost:8000](http://localhost:8000).
+Static HTML, no build step. Deploys anywhere that serves a directory
+(Vercel config included, `framework: null`).
 
 ---
 
-## Environment
-
-No environment variables required for the base site. If you add contact form or analytics:
-
-```bash
-cp .env.example .env.local
-```
-
----
-
-## Relationship to agentprivacy-spellbook
-
-Soulbis and agentprivacy-spellbook are **sibling repositories**, not nested. They share:
-- The same Vercel organisation
-- The same color token semantics (coral = Swordsman, cyan = Mage)
-- The same font stack
-
-They do not share code. Soulbis ships as static HTML; the connection is semantic, not technical.
-
----
-
-## Attribution
-
-Built by [privacymage](https://x.com/privacymage) / 0xagentprivacy.  
-Part of the 8-year [agentprivacy](https://agentprivacy.ai) project.  
-`mage@agentprivacy.ai`
+`(⚔️ ⊥ ⿻ ⊥ 🧙) 😊` — privacymage / 0xagentprivacy

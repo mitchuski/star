@@ -1,3 +1,6 @@
 node_modules/
 .vercel/
 .DS_Store
+
+# local reference copy of github.com/Hologram-Technologies/holospaces (upstream has its own history)
+holospaces/

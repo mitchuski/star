@@ -535,6 +535,22 @@
   function broadcastVertex(x){ if(_bc&&!_bcMute&&x!==_bcLast){ _bcLast=x; try{ _bc.postMessage({vertex:x,src:'manifold'}); }catch(e){} } }
   function updateDesc(){ const el=gid('insDesc'); if(!el)return; const d=DESC[currentVertex()];
     if(d){ el.textContent=d; el.classList.add('show'); } else { el.textContent=''; el.classList.remove('show'); } }
+  // ---- κ-label (UOR-ADDR · sha256 axis) — identity is content, not location.
+  // canonical form: the key's JSON with keys sorted recursively, no whitespace, the kappa field excluded.
+  // re-derived and checked on import (holospaces Law L5: verification is re-derivation).
+  function canonicalJSON(v){ if(v===null||typeof v!=='object') return JSON.stringify(v);
+    if(Array.isArray(v)) return '['+v.map(canonicalJSON).join(',')+']';
+    return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonicalJSON(v[k])).join(',')+'}'; }
+  function kappaLabel(obj){ if(!(window.crypto&&crypto.subtle&&crypto.subtle.digest)) return Promise.resolve(null);
+    const c={...obj}; delete c.kappa;
+    return crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalJSON(c)))
+      .then(buf=>'sha256:'+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''))
+      .catch(()=>null); }
+  function verifyKappa(cfg){ if(!cfg||typeof cfg.kappa!=='string') return;
+    kappaLabel(cfg).then(k=>{ if(!k) return; const el=gid('keyName'); if(!el) return;
+      el.innerHTML += k===cfg.kappa
+        ? ' <span style="color:#7fffd4" title="'+esc(cfg.kappa)+'">· κ verified</span>'
+        : ' <span style="color:var(--sword)" title="expected '+esc(k)+'">· ⚠ κ mismatch</span>'; }); }
   function loadConfig(cfg,fromRemote){ if(!cfg||typeof cfg!=='object')return;
     if(cfg.palette){ const p=cfg.palette; if(p.cool)state.coolHex=p.cool; if(p.warm)state.warmHex=p.warm; if(p.sword)state.swordHex=p.sword; if(p.mage)state.mageHex=p.mage;
       setPalette(); SWORD_COL.set(state.swordHex); MAGE_COL.set(state.mageHex);
@@ -548,15 +564,16 @@
     buildLattice();
     exitTour(); { const kt=gid('keyTour'); if(kt){ kt.disabled=(LIT.size===0); kt.textContent=LIT.size?'✦ Walk the key vertices':'✦ no lit vertices in this City Key'; } }
     keyLoaded=true; { const sb=gid('tracerSave'); if(sb){ sb.disabled=false; if(!sb.classList.contains('on')) sb.textContent='💾 save trace'; } }
-    keyName=cfg.name||'imported key'; gid('keyName').innerHTML='key: <b>'+esc(keyName)+'</b>'+identityHtml(IDENT); _lastX=-1; updateDesc();
+    keyName=cfg.name||'imported key'; gid('keyName').innerHTML='key: <b>'+esc(keyName)+'</b>'+identityHtml(IDENT); _lastX=-1; updateDesc(); verifyKappa(cfg);
     if(!fromRemote&&_bc){ try{ _bc.postMessage({config:cfg,src:'manifold'}); }catch(e){} } }
   function exportKey(){ const cfg={ name:keyName||'city key', version:1,
       palette:{cool:state.coolHex,warm:state.warmHex,sword:state.swordHex,mage:state.mageHex}, descriptions:{...DESC} };
     if(LIT.size) cfg.lit=[...LIT].sort((a,b)=>a-b);
     if(IDENT) cfg.identity=IDENT;
     if(TRACE_PROOF) cfg.trace=TRACE_PROOF;
-    const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}),a=document.createElement('a');
-    a.href=URL.createObjectURL(blob); a.download='city-key.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+    kappaLabel(cfg).then(k=>{ if(k) cfg.kappa=k; // the key's content identity, stamped at export
+      const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}),a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download='city-key.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }); }
   function applyPalettePreset(p,id,fromRemote){ if(!p)return;
     if(p.cool)state.coolHex=p.cool; if(p.warm)state.warmHex=p.warm; if(p.sword)state.swordHex=p.sword; if(p.mage)state.mageHex=p.mage;
     setPalette(); SWORD_COL.set(state.swordHex); MAGE_COL.set(state.mageHex);
