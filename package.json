@@ -1,0 +1,14 @@
+{
+  "name": "soulbis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static site — edit index.html. npm run dev serves the repo root only.",
+  "scripts": {
+    "dev": "serve . -l 8000",
+    "start": "serve . -l 8000",
+    "build": "node scripts/verify-static.cjs"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
