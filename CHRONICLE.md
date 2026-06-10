@@ -1,4 +1,30 @@
-# Chronicle — Soulbis Website
+# Chronicle — The Swordsman's Key
+
+> Entries from 2026-05-27/28 below chronicle this work inside its parent repo, the
+> soulbis website; on 2026-06-10 `/star` + `/lattice` were extracted into this
+> standalone repo. The history is carried, not rewritten.
+
+---
+
+## 2026-06-10 — Extraction + the holospace merge (κ-labelled City Keys)
+
+> Full write-up — the system diagram, the vocabulary mapping, the κ spec, and the
+> community-repo decisions — in **[`CHRONICLE_THE_FIRST_HOLOSPACE_2026-06-10.md`](./CHRONICLE_THE_FIRST_HOLOSPACE_2026-06-10.md)**.
+
+Copied the soulbis website verbatim to `C:\Users\mitch\star` (baseline `7947176`),
+then stripped it to the walkable model (`75ed8f2`): the landing became a minimal
+portal in the key pages' own register; `/star` + `/lattice` untouched except one
+new feature. That feature is the merge with
+[Hologram-Technologies/holospaces](https://github.com/Hologram-Technologies/holospaces):
+every exported **City Key 🗝️** is now stamped with a **κ-label** —
+`kappa: "sha256:" + H(canonical form)`, UOR-ADDR style, on an axis upstream's own
+docs declare legitimate — and every import **re-derives and checks it** (*κ verified
+✓ / κ mismatch ⚠*), on both pages. *Identity is content, not location.* The repo
+itself is packaged as a provisionable **holospace** (`.devcontainer/devcontainer.json`
+is the boot definition; `HOLOSPACE.md` is the integration spec; Platform-Manager
+provisioning awaits the third-party operator key). Upstream reference copy at
+`holospaces/` (gitignored). Verified: κ round-trips vs Node's SHA-256; both pages'
+JS parses; `/`, `/star`, `/lattice` all 200 on :8000.
 
 ---
 
