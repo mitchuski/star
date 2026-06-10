@@ -264,7 +264,7 @@
       <div class="row keybar">
         <button id="impBtn" class="keybtn">⬆ Import</button>
         <button id="expBtn" class="keybtn">⬇ Export</button>
-        <input type="file" id="impFile" accept="application/json,.json" hidden>
+        <input type="file" id="impFile" accept="application/json,.json,image/png,.png" hidden>
       </div>
       <div class="keyname" id="keyName">no key loaded</div>
       <button id="keyTour" class="keybtn keybtn--full" disabled title="Visit only the vertices lit by this key — observe the achievement">✦ Walk the key vertices</button>
@@ -552,6 +552,23 @@
       el.innerHTML += k===cfg.kappa
         ? ' <span style="color:#7fffd4" title="'+esc(cfg.kappa)+'">· κ verified</span>'
         : ' <span style="color:var(--sword)" title="expected '+esc(k)+'">· ⚠ κ mismatch</span>'; }); }
+  // a sigil PNG from /sigil carries the full City Key in a tEXt chunk (keyword 'cityKey', base64 JSON)
+  function b2s(a){ let s=''; for(let i=0;i<a.length;i+=8192) s+=String.fromCharCode.apply(null,a.subarray(i,i+8192)); return s; }
+  function pngExtractKey(buf){ const u=new Uint8Array(buf);
+    if(u.length<20||u[0]!==0x89||u[1]!==0x50||u[2]!==0x4e||u[3]!==0x47) return null;
+    let p=8;
+    while(p+12<=u.length){ const len=((u[p]<<24)|(u[p+1]<<16)|(u[p+2]<<8)|u[p+3])>>>0;
+      const type=String.fromCharCode(u[p+4],u[p+5],u[p+6],u[p+7]);
+      if(type==='tEXt'){ const data=u.subarray(p+8,p+8+len), z=data.indexOf(0);
+        if(z>0&&b2s(data.subarray(0,z))==='cityKey'){ try{
+          const bin=atob(b2s(data.subarray(z+1))), bytes=new Uint8Array(bin.length);
+          for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+          return JSON.parse(new TextDecoder().decode(bytes)); }catch(e){ return null; } } }
+      if(type==='IEND') break; p+=12+len; }
+    return null; }
+  function readKeyFile(file,cb,onErr){ const r=new FileReader();
+    r.onload=()=>{ try{ const cfg=pngExtractKey(r.result)||JSON.parse(new TextDecoder().decode(r.result)); if(!cfg||typeof cfg!=='object')throw 0; cb(cfg); }catch(e){ onErr(); } };
+    r.readAsArrayBuffer(file); }
   function loadConfig(cfg,fromRemote){ if(!cfg||typeof cfg!=='object')return;
     if(cfg.palette){ const p=cfg.palette; if(p.cool)state.coolHex=p.cool; if(p.warm)state.warmHex=p.warm; if(p.sword)state.swordHex=p.sword; if(p.mage)state.mageHex=p.mage;
       setPalette(); SWORD_COL.set(state.swordHex); MAGE_COL.set(state.mageHex);
@@ -671,8 +688,8 @@
   $('launcher2').addEventListener('click',()=>{ $('trace').classList.remove('folded'); $('launcher2').classList.remove('show'); });
   // City Key import / export
   $('impBtn').addEventListener('click',()=>$('impFile').click());
-  $('impFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
-    r.onload=()=>{ try{ loadConfig(JSON.parse(r.result),false); }catch(err){ gid('keyName').textContent='⚠ could not parse JSON'; } }; r.readAsText(f); e.target.value=''; });
+  $('impFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
+    readKeyFile(f,cfg=>loadConfig(cfg,false),()=>{ gid('keyName').textContent='⚠ no City Key in this file (key JSON or sigil PNG)'; }); e.target.value=''; });
   $('expBtn').addEventListener('click',exportKey);
   $('tracerSave').addEventListener('click',()=>{ if(!keyLoaded) return; TRACE_PROOF={ laps:laps, seconds:Math.round(traceSeconds), tourSeconds:Math.round(tourSeconds), savedAt:new Date().toISOString() };
     const b=$('tracerSave'); b.classList.add('on'); b.textContent='✓ trace saved · '+laps+(laps===1?' lap':' laps');

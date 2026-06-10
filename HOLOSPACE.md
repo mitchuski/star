@@ -58,6 +58,38 @@ by re-derivation, anywhere.
 }
 ```
 
+**What the κ is and is not.** The `kappa` field is a *fingerprint*, not a
+transformation: the key's content is untouched, byte for byte. The label is
+computed FROM the content (hash of the canonical form) and appended as one extra
+field. Delete it and the key still works everywhere; recompute it and you get the
+same value back if — and only if — the content is unchanged. It is the key's
+*name*, in the strict UOR sense: derived from what it is, not where it lives.
+Consumers that don't know the field ignore it (verified against agentprivacy's
+`parseCityKey`, which is lenient by design).
+
+**Conformance test vector** (any implementation must reproduce this):
+- Content: `{ name: "the default city key", version: 1, palette: {cool:"#141a3d",
+  warm:"#f0eee8", sword:"#e8523a", mage:"#4dd9e8"}, descriptions: {"0": "The
+  unguarded origin — no dimension held, fully legible.", "63": "Full sovereignty —
+  all six dimensions held; the Swordsman’s reflection of the origin."} }`
+  (the `/sigil` default key; note the U+2019 apostrophe and U+2014 dashes — the
+  canonical form is UTF-8 of the JSON with keys sorted recursively, no whitespace,
+  303 bytes)
+- κ: **`sha256:0b4916babe5eb17104b342ab06030f2071a818024b345bf6d2e4115617c3c527`**
+- Properties verified: key-order independence (same content in any insertion
+  order → same κ); stamped round-trip (re-deriving over a κ-stamped key, with
+  `kappa` excluded from its own preimage, reproduces the same κ).
+
+## The sigil PNG carrier
+
+`/sigil` exports the key's constellation as a PNG that **carries the key**: the
+full City Key JSON, base64-encoded, in a PNG `tEXt` chunk (keyword `cityKey`)
+inserted before `IEND`, with a correct CRC-32 — the image stays a valid PNG for
+every viewer, and the κ caption is also visible in the pixels. All three pages
+import the PNG as readily as the JSON (the import branches on the PNG signature).
+The artifact is self-describing *and* self-carrying: share the picture, you have
+shared the key.
+
 ## Boot
 
 - **Today (any devcontainer tool / Codespaces):** `.devcontainer/devcontainer.json`

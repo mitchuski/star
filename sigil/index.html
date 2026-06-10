@@ -22,8 +22,11 @@
   .navbtn--ghost{ background:none; border-color:var(--line); color:var(--ink); }
   .navbtn--ghost:hover{ border-color:rgba(120,140,220,0.5); }
   .navbtn:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(120,150,255,0.35); }
-  h1{ font-family:'Fraunces',serif; font-weight:300; font-style:italic; font-size:clamp(30px,5vw,56px); line-height:0.95; letter-spacing:-0.01em;
+  h1{ font-family:'Fraunces',serif; font-weight:300; font-style:italic; font-size:clamp(30px,5vw,56px); line-height:1.08; letter-spacing:-0.01em;
+    padding-bottom:0.14em; /* room for the italic g descender — keep its tail out of the lede */
     background:linear-gradient(100deg,#9fc0ff,#e8edff 44%,#ffb9a6); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .explain{ margin:2px 0 16px; max-width:880px; font-size:11.5px; line-height:1.7; color:#aeb8ee; }
+  .explain b{ color:#ffd6c7; font-weight:500; } .explain i{ color:#cfe0ff; font-style:normal; }
   .lede{ margin-top:16px; max-width:720px; font-size:13px; line-height:1.7; color:#aeb8ee; }
   .lede b{ color:#ffd6c7; font-weight:500; } .lede code{ color:#cfe0ff; }
 
@@ -106,7 +109,7 @@
       <div class="bar">
         <button id="impBtn" class="btn">⬆ Import City Key</button>
         <button id="dfltBtn" class="btn">🗝️ the default key</button>
-        <input type="file" id="impFile" accept="application/json,.json" hidden>
+        <input type="file" id="impFile" accept="application/json,.json,image/png,.png" hidden>
       </div>
       <div class="keyname" id="keyName">no key loaded — import one, or summon the default</div>
       <div class="canon-meta" id="canonMeta"></div>
@@ -123,7 +126,7 @@
       <div class="glyphbar"><span>glyph 0 · dark</span><div class="glyphscale"></div><span>glyph f · full</span></div>
       <div class="inspect" id="inspect">hover or click the ring — each vertex shows its glyph, its six named dimensions, and its ⚔️ neg / 🧙 bnot / 😊 succ.</div>
       <div class="bar" style="margin:12px 0 0">
-        <button id="snapBtn" class="btn">📸 export sigil PNG</button>
+        <button id="snapBtn" class="btn" title="the image carries the full City Key in a PNG tEXt chunk — import it on /star, /lattice, or here and the key unfolds back out">📸 export sigil PNG · carries the key</button>
         <span class="keyname" id="ringCap"></span>
       </div>
     </div>
@@ -131,10 +134,11 @@
 
   <div class="compare card">
     <div class="sect">③ Compare — two contents, two identities</div>
+    <p class="explain">Movement ① proves one key is what it says. Compare asks the next question: are <b>two keys the same content?</b> Slot A is the key loaded above; bring any second key into slot B — your own key exported at two different times (did anything change since?), or another bearer's (two sovereignty postures, told apart at a glance). Identical content → identical κ → <i>one identity, twice imported</i>. Any difference at all → the κs diverge and the grids pulse every glyph that moved. <b>The pulse shows <i>that</i> the identities differ, never <i>where</i></b> — a hash scatters one edit across the whole sigil by design (one changed description moves ~60 of 64 glyphs). For the <i>where</i>, read the field list underneath: it names exactly which contents diverge.</p>
     <div class="bar">
       <button id="impBtn2" class="btn">⬆ import a second key</button>
-      <input type="file" id="impFile2" accept="application/json,.json" hidden>
-      <span class="keyname" id="keyName2">slot B empty — same bearer at two times, or two bearers' postures</span>
+      <input type="file" id="impFile2" accept="application/json,.json,image/png,.png" hidden>
+      <span class="keyname" id="keyName2">slot B empty — a key JSON or a sigil PNG (the image carries the key)</span>
     </div>
     <div class="cgrids" id="cgrids" style="display:none">
       <div class="cg"><div class="cgname">A · <b id="cgnA"></b></div><div class="kshort" id="kshortA"></div><div class="grid8" id="gridA"></div></div>
@@ -151,7 +155,8 @@
         <span class="lk">the six dimensions</span><span class="lv">each vertex is a 6-bit posture across <b>d₁ 🛡️ Protection · d₂ 🤝 Delegation · d₃ 📜 Memory · d₄ 🔗 Connection · d₅ ⚡ Computation · d₆ 💎 Value</b> (PVM V5.4 §12.6; vertex 63 = 111111 = full sovereignty).</span>
         <span class="lk">C85 · the bridge</span><span class="lv">the dimensions pair onto the three-axis gate Φ<sub>v5</sub>: <b>Protection+Delegation → Σ (Φ_agent)</b> · <b>Memory+Value → Δ (Φ_data)</b> · <b>Connection+Computation → Γ (Φ_inference)</b> — the lattice and the equation are one geometry <i>[conjecture]</i>.</span>
         <span class="lk">κ-label · Law L5</span><span class="lv"><code>sha256:H(canonical form)</code> — a UOR-ADDR content address; the sha256 axis is canon upstream. Never trusted, always <b>re-derived</b>: movement ① is the law performed.</span>
-        <span class="lk">the sigil</span><span class="lv">glyph intensity 0→f lights each vertex; colour follows the key's own palette by stratum. Change one description and the whole constellation reshapes — <b>the key is its content</b>.</span>
+        <span class="lk">the sigil</span><span class="lv">glyph intensity 0→f lights each vertex; colour follows the key's own palette by stratum. The sigil is always drawn from the <b>re-derived</b> κ — the content's true name — never from the stamped claim. Change one description and the whole constellation reshapes — <b>the key is its content</b>.</span>
+        <span class="lk">the carrier</span><span class="lv">the exported PNG holds the full City Key (base64 JSON in a PNG <code>tEXt</code> chunk, keyword <code>cityKey</code>) with its κ stamped. Import the <i>image</i> on /star, /lattice, or here — the key unfolds back out, and movement ① re-derives its κ from what the image carried.</span>
         <span class="lk">vocabulary</span><span class="lv"><b>glyph</b> — one hex character at one vertex · <b>rune-row</b> — the 64 in succ order · <b>sigil</b> — the whole lighting, the key's face. (The City's runes keep their own register; the sigil is the Swordsman's seal.)</span>
       </div>
       <p style="margin-top:14px;font-size:11px;color:var(--dim);line-height:1.6">Model: <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a> (PVM V5.4 / V6) · substrate: <a href="https://github.com/Hologram-Technologies/holospaces" target="_blank" rel="noopener noreferrer">holospaces</a> · this repo's seam: <code>HOLOSPACE.md</code>.</p>
@@ -159,7 +164,7 @@
   </details>
 
   <footer>
-    <b>The sigil PNG</b> embeds its κ caption — the artifact is self-describing. <b>Live link:</b> on one origin, a key imported on /star or /lattice cascades here (and vice versa) over <code>BroadcastChannel('agentprivacy-succ')</code>; the succ comet's vertex pings the ring. <b>Older keys</b> carry no κ — they derive one here: the key learns its name.
+    <b>The sigil PNG carries the key</b> — the full City Key JSON rides inside the image (PNG <code>tEXt</code> chunk, keyword <code>cityKey</code>), with the κ caption visible in the pixels. Share the picture and you have shared the key; import it on /star, /lattice, or here and it unfolds back out. <b>Live link:</b> on one origin, a key imported on any page cascades to the others over <code>BroadcastChannel('agentprivacy-succ')</code>; the succ comet's vertex pings the ring. <b>Older keys</b> carry no κ — they derive one here: the key learns its name.
   </footer>
 
 <script>
@@ -182,6 +187,41 @@
     return crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalJSON(c)))
       .then(buf=>'sha256:'+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''))
       .catch(()=>null); }
+
+  // ---- the sigil PNG carries the key: full City Key JSON (base64) in a PNG tEXt chunk,
+  // keyword 'cityKey', inserted before IEND. The image IS the artifact — import it anywhere.
+  function b2s(a){ let s=''; for(let i=0;i<a.length;i+=8192) s+=String.fromCharCode.apply(null,a.subarray(i,i+8192)); return s; }
+  const CRCT=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1); t[n]=c; } return t; })();
+  function crc32(bytes){ let c=0xffffffff; for(let i=0;i<bytes.length;i++) c=CRCT[(c^bytes[i])&0xff]^(c>>>8); return (c^0xffffffff)>>>0; }
+  function pngEmbedKey(dataURL,cfg){ const bin=atob(dataURL.slice(dataURL.indexOf(',')+1));
+    const png=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) png[i]=bin.charCodeAt(i);
+    const payload=btoa(b2s(new TextEncoder().encode(JSON.stringify(cfg))));
+    const kw='cityKey', data=new Uint8Array(kw.length+1+payload.length);
+    for(let i=0;i<kw.length;i++) data[i]=kw.charCodeAt(i); data[kw.length]=0;
+    for(let i=0;i<payload.length;i++) data[kw.length+1+i]=payload.charCodeAt(i);
+    const chunk=new Uint8Array(12+data.length), dv=new DataView(chunk.buffer);
+    dv.setUint32(0,data.length); chunk[4]=0x74;chunk[5]=0x45;chunk[6]=0x58;chunk[7]=0x74; chunk.set(data,8);
+    const crcBuf=new Uint8Array(4+data.length); crcBuf.set(chunk.subarray(4,8),0); crcBuf.set(data,4);
+    dv.setUint32(8+data.length,crc32(crcBuf));
+    const iend=png.length-12; // canvas PNGs end with the 12-byte IEND chunk
+    const out=new Uint8Array(png.length+chunk.length);
+    out.set(png.subarray(0,iend),0); out.set(chunk,iend); out.set(png.subarray(iend),iend+chunk.length);
+    return new Blob([out],{type:'image/png'}); }
+  function pngExtractKey(buf){ const u=new Uint8Array(buf);
+    if(u.length<20||u[0]!==0x89||u[1]!==0x50||u[2]!==0x4e||u[3]!==0x47) return null;
+    let p=8;
+    while(p+12<=u.length){ const len=((u[p]<<24)|(u[p+1]<<16)|(u[p+2]<<8)|u[p+3])>>>0;
+      const type=String.fromCharCode(u[p+4],u[p+5],u[p+6],u[p+7]);
+      if(type==='tEXt'){ const data=u.subarray(p+8,p+8+len), z=data.indexOf(0);
+        if(z>0&&b2s(data.subarray(0,z))==='cityKey'){ try{
+          const bin=atob(b2s(data.subarray(z+1))), bytes=new Uint8Array(bin.length);
+          for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+          return JSON.parse(new TextDecoder().decode(bytes)); }catch(e){ return null; } } }
+      if(type==='IEND') break; p+=12+len; }
+    return null; }
+  function readKeyFile(file,cb,onErr){ const r=new FileReader();
+    r.onload=()=>{ try{ const cfg=pngExtractKey(r.result)||JSON.parse(new TextDecoder().decode(r.result)); if(!cfg||typeof cfg!=='object')throw 0; cb(cfg); }catch(e){ onErr(); } };
+    r.readAsArrayBuffer(file); }
 
   // ---- palette (follows the loaded key; defaults = artificial, must match /star + /lattice)
   const pal={ cool:'#141a3d', warm:'#f0eee8', sword:'#e8523a', mage:'#4dd9e8' };
@@ -302,9 +342,12 @@
     c2.textAlign='center'; c2.font='italic 300 40px Fraunces,serif'; c2.fillStyle='#e8edff'; c2.fillText(A.name||'city key',cx,cy-14);
     c2.font='15px monospace'; c2.fillStyle='rgba(174,184,238,0.95)'; c2.fillText('(⚔️ ⊥ ⿻ ⊥ 🧙) 😊',cx,cy+22);
     c2.font='13px monospace'; c2.fillStyle='rgba(124,134,184,0.95)'; c2.fillText(A_KAPPA,S/2,S+34);
-    const a=document.createElement('a'); a.href=cv.toDataURL('image/png');
+    // the image carries the key: the exact content whose κ is shown, with that κ stamped
+    const carried={...A}; delete carried.kappa; if(A_KAPPA) carried.kappa=A_KAPPA;
+    const blob=pngEmbedKey(cv.toDataURL('image/png'),carried);
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
     a.download='sigil-'+(A.name||'city-key').replace(/[^a-z0-9-]+/gi,'-').toLowerCase()+'.png';
-    document.body.appendChild(a); a.click(); a.remove(); });
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); });
 
   // ---- movement ③ — compare
   function buildGrid8(el,kappa){ el.innerHTML='';
@@ -312,8 +355,7 @@
       const g=kappa?parseInt(kappa[7+x],16):0, t=pc(x)/BITS, inten=0.10+0.90*g/15;
       d.style.background=grad(t,inten); d.textContent=kappa?g.toString(16):''; d.title='vertex '+x+' · '+b6(x);
       el.appendChild(d); } }
-  function buildCompare(){ if(!A_KAPPA||!B_KAPPA){ if(A_KAPPA&&B===null) return; }
-    if(!(A_KAPPA&&B_KAPPA)) return;
+  function buildCompare(){ if(!(A_KAPPA&&B_KAPPA)) return;
     $('cgrids').style.display='';
     $('cgnA').textContent=A.name||'key A'; $('cgnB').textContent=B.name||'key B';
     $('kshortA').textContent=A_KAPPA; $('kshortB').textContent=B_KAPPA;
@@ -330,19 +372,19 @@
     const dvs=[...new Set([...Object.keys(da),...Object.keys(db)])].filter(k=>String(da[k]||'')!==String(db[k]||''));
     $('difflist').innerHTML = A_KAPPA===B_KAPPA
       ? '<span class="same">✓ identical κ — identical content. One identity, twice imported.</span>'
-      : '<b>'+dv+'</b> of 64 sigil glyphs diverge (pulsed above). Content fields that differ: <b>'+(diffs.length?diffs.join(' · '):'none — formatting only')+'</b>'+
+      : '<b>'+dv+'</b> of 64 sigil glyphs diverge — <i>that</i> they differ (pulsed above). <i>Where</i> they differ: <b>'+(diffs.length?diffs.join(' · '):'none — formatting only')+'</b>'+
         (dvs.length?('<br>descriptions diverging at vertices: <b>'+dvs.sort((a,b)=>a-b).join(', ')+'</b>'):'')+
         '<br><span style="color:var(--dim)">two contents, two identities — the κ does not negotiate.</span>'; }
 
   // ---- import wiring + the default key
   $('impBtn').addEventListener('click',()=>$('impFile').click());
-  $('impFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
-    r.onload=()=>{ try{ loadKey(JSON.parse(r.result),false); }catch(err){ $('keyName').textContent='⚠ could not parse JSON'; } }; r.readAsText(f); e.target.value=''; });
+  $('impFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
+    readKeyFile(f,cfg=>loadKey(cfg,false),()=>{ $('keyName').textContent='⚠ no City Key in this file (expects key JSON or a sigil PNG)'; }); e.target.value=''; });
   $('dfltBtn').addEventListener('click',()=>loadKey(defaultKey(),false));
   $('impBtn2').addEventListener('click',()=>$('impFile2').click());
-  $('impFile2').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
-    r.onload=()=>{ try{ B=JSON.parse(r.result); $('keyName2').innerHTML='B: <b>'+esc(B.name||'imported key')+'</b>';
-      kappaLabel(B).then(k=>{ B_KAPPA=k; buildCompare(); }); }catch(err){ $('keyName2').textContent='⚠ could not parse JSON'; } }; r.readAsText(f); e.target.value=''; });
+  $('impFile2').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
+    readKeyFile(f,cfg=>{ B=cfg; $('keyName2').innerHTML='B: <b>'+esc(B.name||'imported key')+'</b>';
+      kappaLabel(B).then(k=>{ B_KAPPA=k; buildCompare(); }); },()=>{ $('keyName2').textContent='⚠ no City Key in this file (expects key JSON or a sigil PNG)'; }); e.target.value=''; });
 
   // ---- live link (same origin) — keys cascade in; the succ comet pings the ring
   let bc=null; try{ bc=new BroadcastChannel('agentprivacy-succ'); }catch(e){ bc=null; }

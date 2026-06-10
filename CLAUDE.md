@@ -60,8 +60,21 @@ all three pages. The model's canonical home is agentprivacy.ai/model (PVM V5.4).
 
 **κ-label rules** (see HOLOSPACE.md): canonical form = keys sorted recursively, no
 whitespace, `kappa` excluded; hashed with SHA-256 (`crypto.subtle`); stamped at
-export, **re-derived and checked at import** on both pages. Never compute the κ
-over pretty-printed JSON; never include `kappa` in its own preimage.
+export, **re-derived and checked at import** on all pages. Never compute the κ
+over pretty-printed JSON; never include `kappa` in its own preimage. The κ is a
+fingerprint appended as a field — never a transformation of the content; /city's
+`parseCityKey` is lenient and ignores it. **Conformance vector** (must hold after
+any change to the canon — the default key on /sigil):
+`sha256:0b4916babe5eb17104b342ab06030f2071a818024b345bf6d2e4115617c3c527`.
+The /sigil constellation is always drawn from the **re-derived** κ, never the
+stamped claim.
+
+**Sigil PNG carrier**: /sigil's exported PNG embeds the full key as base64 JSON in
+a PNG `tEXt` chunk, keyword `cityKey`, inserted before IEND with correct CRC-32.
+All three pages' import accepts JSON or this PNG (`readKeyFile` branches on the
+PNG signature). The embed code lives only in /sigil; the extract code
+(`b2s`/`pngExtractKey`/`readKeyFile`) is duplicated in all three pages — keep the
+copies identical.
 
 ## Cross-page link
 
