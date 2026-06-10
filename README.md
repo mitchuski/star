@@ -8,6 +8,7 @@ bootable, content-addressed environment.
 |---|---|
 | `/star` | the Star-Tetrahedron Manifold — orbit the stella octangula, trace the succ cycle, walk your key's lit vertices |
 | `/lattice` | The 64 · Vertex Codex — every vertex with its stratum, ⚔️ neg, 🧙 bnot, and successor |
+| `/sigil` | The Sigil — watch a key's κ be re-derived, see its 64-glyph constellation (SHA-256 = one hex glyph per vertex), compare two keys |
 
 64 vertices · a 6-bit address across the six sovereignty dimensions · ∂M 96 edges,
 the holographic boundary (96/64 = 1.5 = P^1.5) · **value lives on the path, not the

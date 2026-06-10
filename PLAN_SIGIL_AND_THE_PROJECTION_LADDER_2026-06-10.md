@@ -78,7 +78,7 @@ a rung **below** (into the bytes) and a rung **above** (into the many):
    /lattice   the 64, flat            (exists)
    /star      the boundary, 3D       (exists)
    ───────────────────────────────────────────────────────────────
-   /sky       ⇡ beyond the star — THE MANY
+   /skye       ⇡ beyond the star — THE MANY
               every key a star: a night sky of κ-constellations,
               the operator's fleet view (future — needs >1 key to matter)
 ```
@@ -113,9 +113,9 @@ much stronger than a badge-checker.
    same bearer at different times = watching the key *live*; two bearers' keys =
    two sovereignty postures, distinguishable at a glance.
 
-**Why this page and not /sky first:** /sigil pays off with a *single* key today,
+**Why this page and not /skye first:** /sigil pays off with a *single* key today,
 deepens the existing import/export loop on both current pages, and gives every key
-holder a shareable artifact (their sigil PNG). /sky needs a population of keys to
+holder a shareable artifact (their sigil PNG). /skye needs a population of keys to
 be interesting — it becomes compelling exactly when the community repo has users
 (and it is the natural home for the 63 named-vertex mages, each of whose keys
 would hang as a star in it).
@@ -155,7 +155,7 @@ Ordered by payoff-per-effort:
 - **Phase 2** — `/sigil` (the third projection; one self-contained page in the
   established register; the substantial build).
 - **Phase 3** — 4.3 function portraits on /star (+ optional 4.5).
-- **Phase 4** — `/sky`, when there are keys enough to fill it; 63-NFT tie-in.
+- **Phase 4** — `/skye`, when there are keys enough to fill it; 63-NFT tie-in.
 
 ## 6. Open decisions (flagged, not resolved)
 

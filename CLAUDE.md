@@ -13,9 +13,16 @@ Three static pages, no build step, no framework:
 
 | Route | File | What it is |
 |---|---|---|
-| `/` | `index.html` | Portal — two doors to /star and /lattice, holospace note |
+| `/` | `index.html` | Portal — three doors, holospace note |
 | `/star` | `star/index.html` | 3D Star-Tetrahedron Manifold (three.js r128 via CDN) |
 | `/lattice` | `lattice/index.html` | The 64 · Vertex Codex (flat grid, no dependencies) |
+| `/sigil` | `sigil/index.html` | The Sigil — κ derivation theater + the 64-glyph constellation + key compare (canvas 2D, no dependencies) |
+
+Planned fourth rung: `/skye` — the many-keys night sky (see the plan doc). The
+κ-constellation correspondence: SHA-256 = 64 hex glyphs = one per vertex; the six
+dimensions are named per PVM V5.4 §12.6 (d₁🛡️ Protection · d₂🤝 Delegation ·
+d₃📜 Memory · d₄🔗 Connection · d₅⚡ Computation · d₆💎 Value, bit 0 = d₁), and
+C85 pairs them onto Σ/Δ/Γ.
 
 Each page is **fully self-contained** (inline CSS + JS). Shared logic — palette
 presets, City Key handling, κ-label helpers — is deliberately **duplicated**, not
