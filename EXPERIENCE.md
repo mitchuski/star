@@ -24,7 +24,7 @@ same value back — if and only if nothing changed. It is my key's **name, deriv
 from what it is rather than where it lives**. And `/city` still reads the key
 fine; its parser ignores fields it doesn't know.
 
-## 2. The walk — three pages, three altitudes
+## 2. The walk — the rooms, by altitude
 
 ### The portal (`/`)
 
@@ -69,7 +69,7 @@ The bytes room, beneath the other two. Three movements:
    every vertex** — my identity, drawn as a constellation on the same lattice I
    walk. I export it as a PNG. The image is self-carrying: **the full key rides
    inside the picture** (a PNG text chunk), with the κ caption visible. Share
-   the picture, share the key. Import the picture on any of the three pages and
+   the picture, share the key. Import the picture on any of the key-reading pages and
    the key unfolds back out.
 3. **Compare.** I drop a second key beside the first. Same content → same κ —
    *one identity, twice imported*. Anything different → the κs diverge and the
@@ -155,16 +155,32 @@ The living state of this work, to iterate against (with Claude, in this repo):
 | /star · /lattice extraction, portal | ✅ shipped (`75ed8f2`) |
 | κ-labels: export-stamp + import-verify, all pages | ✅ shipped, conformance vector pinned (CLAUDE.md / HOLOSPACE.md) |
 | /sigil: derive · constellate · compare | ✅ shipped (`6466981`) |
-| Sigil PNG **carries the key**; PNG import on all three pages | ✅ shipped |
+| Sigil PNG **carries the key**; PNG import on all key-reading pages (now four, incl. /skye) | ✅ shipped |
+| /star 📸 snapshot carries the key too (when loaded) | ✅ shipped — note: /star's view (no focus/witness; those ride via /lattice JSON or /sigil PNG) |
 | /city round-trip (JSON key with κ) | ✅ verified against `parseCityKey` — lenient, reads fine |
-| /city importing the sigil **PNG** | ☐ not yet — /city reads text only; small add in agentprivacy_master when wanted |
-| Live κ ticker + 🪬 constellation toggle on /lattice (plan §4.1–4.2) | ☐ next |
-| Function portraits on /star (neg 31 chords · bnot 32 diameters) | ☐ planned (plan §4.3) |
-| /skye — the many-keys night sky (63 named-vertex mages) | ☐ future (plan phase 4) |
-| LICENSE for the public repo | ☐ open decision |
+| /city charging the sigil **PNG** | ✅ synced in agentprivacy_master (`parseCityKeyBytes` + charge input accepts .png) — commit in that repo, push when ready |
+| The **shape travels** — `geometry` (ε·m·n·core·⚔️:🧙) in the key; /star rebuilds it, /lattice passes it, /sigil's ring wears it (six petals at n=6) | ✅ shipped — colour chosen · shape chosen · light derived |
+| **SHAPE-1.5 · the compression engraving** — per-vertex relief from focus/lit/witness/described; pure function of content (same key ⇒ same shape, everywhere); vector: w(12)=0.90·w(63)=0.25·w(0)=0.10 | ✅ prototyped on /sigil (live + PNG) — canon + evolution ladder in `PLAN_KEY_EVOLUTION_MEASURED_GEOMETRY_2026-06-10.md` |
+| **v2 `figures` block** — measured values drive the manifold: agent overlap → det(Σ)/ε · visibility ratios → per-petal amplitudes · zkp → ⚡ petal; C1 gains an empirical instrument | ✅ consumer side built 2026-06-11 (/star derives geometry from figures · /sigil scales petals by visibility + floors the ⚡ petal) — producing real measurements stays /city-side, future |
+| **`prior` κ-chain** — an evolved export stamps the loaded ancestor's κ; unchanged re-export stays idempotent (same bytes, same κ); C87 made operational | ✅ built 2026-06-11 (/star + /lattice export · /sigil "descends from" · /skye gold threads) |
+| **v3 proven figures** — ZKPs against the κ commitment: show the shape, prove the figures, keep the JSON home | ☐ horizon — converges with the redacted charge pass |
+| Redacted **charge pass** (trace+witness+κ only — fill mana without circulating key content) | ✅ built 2026-06-11 (⚡ on /lattice · /city `parseCityKey` accepts the redacted form, tsc clean) |
+| **DH-PSI common ground** — learn the ∩ and only the ∩ (blinded intersection) | ✅ BUILT 2026-06-11 same session (un-held): 🤝 card on /skye — modp2048 QR group (MR-verified), two-file exchange, scope chips cap what enters; all handoff acceptance checks pass |
+| **📸 sky shot** — /skye final export: the picture carries every risen key (`citySky` chunk); re-import raises the whole night | ✅ built 2026-06-11 (round-trip + CRC verified) |
+| Chronicles across the suite (soulbis website · agentprivacy_master · spellweb · agentprivacy-docs) | ✅ written 2026-06-10 |
+| Live κ ticker + 🪬 constellation toggle on /lattice (plan §4.1–4.2) | ✅ shipped 2026-06-10 (+ ✍️ inscription, earned by presence) |
+| Function portraits on /star (neg 31 chords · bnot 32 diameters) | ✅ built 2026-06-11 — ⚔️/🧙 etoggles in the Path panel |
+| /skye — the many-keys night sky | ✅ v1 built 2026-06-11 — κ-placed stars, gold lineage threads, teal common-ground threads, all local; the 63-named-vertex sky remains future |
+| LICENSE for the public repo | ✅ MIT (mirrors upstream holospaces), 2026-06-11 |
 | Introduce upstream (Hologram-Technologies) → operator key | ☐ open |
+| **Trust-task tracing protocol** — proof packets · key `packets` digest + `did` passthrough (LOAD-BEARING: star must carry them before /city mints them) · packet verification on /sigil · figures derived from packets | ☐ spec'd + planned 2026-06-11 — see `agentprivacy_master/docs/experience/PLAN_TRUST_TASK_SYNC_INTO_THE_WHOLE_2026-06-11.md` (star = phases 4 + 9) |
 
-Companion documents: `README.md` (what), `HOLOSPACE.md` (the substrate seam),
+Companion documents: `README.md` (what), `HOW_THE_SIGIL_WORKS.md` (the carrier
+mechanism — colour is chosen, light is derived), `HOLOSPACE.md` (the substrate
+seam), `CONCEPT_COMPRESSION_REHYDRATION_DUAL_AGENTS.md` (the eight-station
+journey: forge→forget→remember→coordinates→key→walk→prove→name, and the
+rehydration back into ⚔️+🧙 with the First Person never serialized),
+`PLAN_KEY_EVOLUTION_MEASURED_GEOMETRY_2026-06-10.md` (the figures ladder),
 `PLAN_SIGIL_AND_THE_PROJECTION_LADDER_2026-06-10.md` (the design map),
 `CHRONICLE_THE_FIRST_HOLOSPACE_2026-06-10.md` (the record).
 

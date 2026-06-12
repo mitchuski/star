@@ -77,6 +77,15 @@
     display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8); }
   .gcell.diff{ outline:2px solid var(--sword); outline-offset:1px; animation:pulse 1.6s ease-in-out infinite; }
   @keyframes pulse{ 0%,100%{ box-shadow:0 0 4px 1px rgba(232,82,58,0.3);} 50%{ box-shadow:0 0 14px 4px rgba(232,82,58,0.65);} }
+  /* the overlap lattice — where the two keys touch the same ground (content, not hash) */
+  .ovkey{ display:flex; gap:16px; flex-wrap:wrap; margin:12px 0 10px; font-size:10.5px; color:var(--dim); align-items:center; }
+  .ovkey .chip{ display:flex; align-items:center; gap:6px; }
+  .ovdot{ width:10px; height:10px; border-radius:3px; }
+  .gcell.ov-both{ background:rgba(127,255,212,0.30); outline:1px solid rgba(127,255,212,0.65); box-shadow:0 0 12px rgba(127,255,212,0.4); color:#d6fff0; }
+  .gcell.ov-a{ background:rgba(232,82,58,0.22); outline:1px solid rgba(232,82,58,0.5); color:#ffd9d0; }
+  .gcell.ov-b{ background:rgba(159,192,255,0.22); outline:1px solid rgba(159,192,255,0.55); color:#dbe6ff; }
+  .gcell.ov-none{ background:rgba(120,140,220,0.05); color:rgba(124,134,184,0.45); }
+  .ovsum{ font-size:11px; color:#cdd6f5; margin-left:auto; } .ovsum b{ color:#7fffd4; font-weight:500; }
   .difflist{ margin-top:16px; font-size:11.5px; line-height:1.8; color:#cdd6f5; }
   .difflist b{ color:#ffd6c7; font-weight:500; } .difflist .same{ color:var(--teal); }
 
@@ -98,14 +107,15 @@
 <body>
   <header class="top">
     <div class="eyebrow"><span>soulbis.com/sigil · the third projection · beneath the lattice</span>
-      <span class="navgrp"><a class="navbtn navbtn--ghost" href="/">↖ home</a><a class="navbtn" href="/lattice">↗ /lattice</a><a class="navbtn" href="/star">↗ /star</a></span></div>
+      <span class="navgrp"><a class="navbtn navbtn--ghost" href="/">↖ home</a><a class="navbtn" href="/star" title="the star-tetrahedron manifold">⚔️ /star</a><a class="navbtn" href="/lattice" title="the 64 · vertex codex">🧙 /lattice</a><a class="navbtn" href="/skye" title="the night of many keys">🌌 /skye</a><a class="navbtn navbtn--ghost" href="/guide" title="how the key works — the plain-words guide">🗡️ /guide</a></span></div>
     <h1>The Sigil</h1>
-    <p class="lede">A SHA-256 digest is <b>64 hexadecimal glyphs</b>. The lattice has <b>64 vertices</b>. A City Key's κ-label — <code>kappa = sha256:H(canonical form)</code> — therefore writes <b>one glyph on every vertex</b>: a rune-row across the whole lattice, the key's identity rendered as a constellation. Sixty-four glyphs, one sigil. <b>Identity is content, not location</b> — derived here, before your eyes, never just asserted.</p>
+    <p class="lede">Your <b>City Key 🗝️</b>, read three ways. <b>① Derive</b> — its name, the <b>κ</b> = <code>sha256:H(canonical form)</code>, recomputed from its bytes and checked, in the open. <b>② Constellate</b> — the name drawn: <b>64 hash glyphs, one per vertex</b>. <b>③ Compare</b> — two keys side by side. <b>Identity is content, not location.</b> Full grounding in the 📖 legend below.</p>
   </header>
 
   <div class="wrap">
     <div class="card">
       <div class="sect">① Derive — verification is re-derivation</div>
+      <p class="explain">The key's exact bytes, then their SHA-256 typed out against the stamped κ. <b>Teal</b> = it is what it says · <b>coral</b> = it isn't · no κ yet = the key learns its name here.</p>
       <div class="bar">
         <button id="impBtn" class="btn">⬆ Import City Key</button>
         <button id="dfltBtn" class="btn">🗝️ the default key</button>
@@ -118,10 +128,16 @@
       <div class="hashrow" id="hashRow"><span class="axis">sha256:</span><span class="h" id="hashHex"></span></div>
       <div class="verdict" id="verdict">Law L5: a κ-label is never trusted, only re-derived. Import a key to watch its name be earned.</div>
       <div class="prov" id="prov"></div>
+      <div class="bar" style="margin-top:10px">
+        <button id="vpktBtn" class="btn" title="load a spellweb.bearer.packets bundle (⬇ proof packets, from agentprivacy /runecraft) — each packet's proof re-derives (Law L5) and the Merkle root is matched against this key's packets digest">🧾 verify packets bundle</button>
+        <input type="file" id="vpktFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="verdict" id="pktVerdict" style="display:none"></div>
     </div>
 
     <div class="card">
       <div class="sect">② Constellate — the κ as a lighting of the 64</div>
+      <p class="explain"><b>Colour</b> = your palette (chosen) · <b>shape</b> = your stance + earned relief (carried) · <b>light</b> = the hash (derived — one edit moves ~60 of 64 glyphs). Click a vertex to read it. 📸 exports a PNG that <i>carries the key</i>.</p>
       <div class="ringwrap"><canvas id="ring"></canvas></div>
       <div class="glyphbar"><span>glyph 0 · dark</span><div class="glyphscale"></div><span>glyph f · full</span></div>
       <div class="inspect" id="inspect">hover or click the ring — each vertex shows its glyph, its six named dimensions, and its ⚔️ neg / 🧙 bnot / 😊 succ.</div>
@@ -134,11 +150,22 @@
 
   <div class="compare card">
     <div class="sect">③ Compare — two contents, two identities</div>
-    <p class="explain">Movement ① proves one key is what it says. Compare asks the next question: are <b>two keys the same content?</b> Slot A is the key loaded above; bring any second key into slot B — your own key exported at two different times (did anything change since?), or another bearer's (two sovereignty postures, told apart at a glance). Identical content → identical κ → <i>one identity, twice imported</i>. Any difference at all → the κs diverge and the grids pulse every glyph that moved. <b>The pulse shows <i>that</i> the identities differ, never <i>where</i></b> — a hash scatters one edit across the whole sigil by design (one changed description moves ~60 of 64 glyphs). For the <i>where</i>, read the field list underneath: it names exactly which contents diverge.</p>
+    <p class="explain">Between two bearers the κs will <i>always</i> differ — that's identity working, not news. <b>The discovery is the common ground</b>: the ∩ lattice leads — vertices both keys have walked (lit · described · poured · proven). Drop a second key (JSON or sigil PNG) into B. Below the ∩: each sigil in its own palette (the pulse = identity divergence), then the exact diverging fields. <i>Today, compare reads both keys in full; the designed next rung discovers the ∩ with zero knowledge — learn what's shared, reveal nothing else.</i></p>
     <div class="bar">
       <button id="impBtn2" class="btn">⬆ import a second key</button>
       <input type="file" id="impFile2" accept="application/json,.json,image/png,.png" hidden>
       <span class="keyname" id="keyName2">slot B empty — a key JSON or a sigil PNG (the image carries the key)</span>
+    </div>
+    <div id="ovwrap" style="display:none">
+      <div class="sect" style="margin-top:6px">A ∩ B — common ground · where the two keys touch the same territory</div>
+      <div class="ovkey">
+        <span class="chip"><span class="ovdot" style="background:rgba(127,255,212,0.85)"></span>both walked it</span>
+        <span class="chip"><span class="ovdot" style="background:rgba(232,82,58,0.8)"></span>only A</span>
+        <span class="chip"><span class="ovdot" style="background:rgba(159,192,255,0.85)"></span>only B</span>
+        <span class="chip"><span class="ovdot" style="background:rgba(120,140,220,0.15)"></span>neither</span>
+        <span class="ovsum" id="ovsum"></span>
+      </div>
+      <div class="grid8" id="gridOv"></div>
     </div>
     <div class="cgrids" id="cgrids" style="display:none">
       <div class="cg"><div class="cgname">A · <b id="cgnA"></b></div><div class="kshort" id="kshortA"></div><div class="grid8" id="gridA"></div></div>
@@ -157,6 +184,10 @@
         <span class="lk">κ-label · Law L5</span><span class="lv"><code>sha256:H(canonical form)</code> — a UOR-ADDR content address; the sha256 axis is canon upstream. Never trusted, always <b>re-derived</b>: movement ① is the law performed.</span>
         <span class="lk">the sigil</span><span class="lv">glyph intensity 0→f lights each vertex; colour follows the key's own palette by stratum. The sigil is always drawn from the <b>re-derived</b> κ — the content's true name — never from the stamped claim. Change one description and the whole constellation reshapes — <b>the key is its content</b>.</span>
         <span class="lk">the carrier</span><span class="lv">the exported PNG holds the full City Key (base64 JSON in a PNG <code>tEXt</code> chunk, keyword <code>cityKey</code>) with its κ stamped. Import the <i>image</i> on /star, /lattice, or here — the key unfolds back out, and movement ① re-derives its κ from what the image carried.</span>
+        <span class="lk">the shape</span><span class="lv">the second chosen layer: the key's <code>geometry</code> field carries the manifold parameters from /star's Lattice Console (ε · m · n · det(Σ) · ⚔️:🧙 — reserved in the 2026-05-27 interop, filled 2026-06-10). The ring here <b>wears</b> the ε·cos(nθ) envelope of r(θ,φ) — at n = 6, six petals, one per dimension. Shape is content: change it and the κ — and the whole sigil — relight.</span>
+        <span class="lk">the engraving · SHAPE-1.5</span><span class="lv">the petals are the stance you <i>chose</i>; the relief on them is the work you <i>did</i>. Each vertex's radius is raised by its compression weight — w(x) = 0.50·focus + 0.25·lit + 0.15·witness-proven + 0.10·described — a <b>pure function of the key's content</b>, so the same key (JSON, or carried in anyone's sigil PNG) makes the <b>same shape everywhere</b>. The evolution path (measured figures: agent overlap → det(Σ), visibility ratios → petal amplitudes, zkp → the ⚡ petal) is the plan doc <code>PLAN_KEY_EVOLUTION_MEASURED_GEOMETRY_2026-06-10.md</code>.</span>
+        <span class="lk">the figures · FIG-2.0</span><span class="lv">when a key carries a measured <code>figures</code> block (agent-data <b>overlap</b> · ⚔️:🧙 <b>ratio</b> · per-dimension <b>visibility</b> · <b>zkp</b> counts), shape stops being chosen: /star derives the manifold from it (ε = 0.6·(1−overlap) · det(Σ) = overlap), each dimension's petal here scales by its visibility ratio, and proof activity floors the ⚡ petal. Figures are content — they move the κ.</span>
+        <span class="lk">the lineage · prior</span><span class="lv">an <i>evolved</i> export stamps <code>prior</code> = the κ of the key it grew from — keys form a hash chain (C87: <i>the key accumulates</i>). An unchanged re-export keeps its prior and its κ unchanged: lineage marks evolution, not circulation.</span>
         <span class="lk">vocabulary</span><span class="lv"><b>glyph</b> — one hex character at one vertex · <b>rune-row</b> — the 64 in succ order · <b>sigil</b> — the whole lighting, the key's face. (The City's runes keep their own register; the sigil is the Swordsman's seal.)</span>
       </div>
       <p style="margin-top:14px;font-size:11px;color:var(--dim);line-height:1.6">Model: <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a> (PVM V5.4 / V6) · substrate: <a href="https://github.com/Hologram-Technologies/holospaces" target="_blank" rel="noopener noreferrer">holospaces</a> · this repo's seam: <code>HOLOSPACE.md</code>.</p>
@@ -187,6 +218,39 @@
     return crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonicalJSON(c)))
       .then(buf=>'sha256:'+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join(''))
       .catch(()=>null); }
+  // ---- packet verifier (the Tracing Protocol · same canon, `proof` excluded instead of `kappa`)
+  function sha256hex(str){ if(!(window.crypto&&crypto.subtle&&crypto.subtle.digest)) return Promise.resolve(null);
+    return crypto.subtle.digest('SHA-256',new TextEncoder().encode(str))
+      .then(buf=>'sha256:'+[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')).catch(()=>null); }
+  // a packet's proof re-derives over its canonical form with `proof` excluded — the same Law L5 as κ
+  function derivePacketProof(pkt){ const c={...pkt}; delete c.proof; return sha256hex(canonicalJSON(c)); }
+  // Merkle root of packet proofs: leaves sorted lexicographically · sha256(left|right) · odd promoted.
+  // Conformance vector: the three leaves sha256(utf8 "packet-alpha/beta/gamma") → root
+  // sha256:07f20f689c8bef2d8a9a2a71d94e7014ea8398cc603b0ff72dadba5c517983d1
+  async function packetsDigest(proofs){ let level=proofs.filter(p=>typeof p==='string'&&p.length>0).sort();
+    if(!level.length) return null;
+    while(level.length>1){ const next=[];
+      for(let i=0;i<level.length;i+=2){ if(i+1<level.length){ const h=await sha256hex(level[i]+'|'+level[i+1]); if(!h) return null; next.push(h); } else next.push(level[i]); }
+      level=next; }
+    return level[0]; }
+  // verify a spellweb.bearer.packets bundle: re-derive each proof (Law L5), recompute the
+  // Merkle root, and match it against the loaded key's packets.root. Returns verdict HTML.
+  async function verifyPacketsBundle(json){
+    if(!json||typeof json!=='object'||json.kind!=='spellweb.bearer.packets'||!Array.isArray(json.packets))
+      return '⚠ not a packets bundle — expects a <b>spellweb.bearer.packets</b> JSON (⬇ proof packets, from agentprivacy /runecraft).';
+    const pkts=json.packets; if(!pkts.length) return '⚠ the bundle carries no packets.';
+    let verified=0; const tampered=[];
+    for(const p of pkts){ if(!p||typeof p.proof!=='string') continue;
+      const d=await derivePacketProof(p); if(d===p.proof) verified++; else tampered.push(p.shopHref||'?'); }
+    const root=await packetsDigest(pkts.map(p=>p&&p.proof).filter(Boolean));
+    let out='🧾 <b>'+pkts.length+'</b> packets · <b class="'+(verified===pkts.length?'ok':'bad')+'">'+verified+'/'+pkts.length+'</b> re-derive (Law L5)'+(tampered.length?' · ⚠ '+tampered.length+' tampered':'')+'<br>';
+    out+='digest 🌳: <b>'+esc(String(root||'').slice(0,19))+'…</b>';
+    const claimed=(A&&A.packets&&typeof A.packets.root==='string')?A.packets.root:null;
+    if(claimed){ out += (root===claimed)
+      ? ' · <b class="ok">✓ matches this key</b> — the key carries exactly this set of proofs.'
+      : ' · <b class="bad">✗ mismatch</b> — this bundle is not the set the key digests ('+(A.packets.count|0)+' expected).'; }
+    else out+=' · <span style="color:var(--dim)">no key with a packets digest loaded — import a /city key to match against.</span>';
+    return out; }
 
   // ---- the sigil PNG carries the key: full City Key JSON (base64) in a PNG tEXt chunk,
   // keyword 'cityKey', inserted before IEND. The image IS the artifact — import it anywhere.
@@ -240,6 +304,23 @@
   // ---- state: slot A (the sigil) + slot B (comparison)
   let A=null, A_KAPPA=null, B=null, B_KAPPA=null, sel=-1, ping=-1, pingT=0;
 
+  // ---- SHAPE-1.5 · the compression shape (see PLAN_KEY_EVOLUTION_MEASURED_GEOMETRY_2026-06-10.md)
+  // w(x) = min(1, 0.50·focus_x/max(focus) + 0.25·[lit] + 0.15·proven_x/focus_x + 0.10·[described])
+  // Pure function of canonical key content — same key (JSON or carried in a sigil PNG) ⇒ same shape, everywhere.
+  let W=new Array(N).fill(0);
+  function computeWeights(cfg){ W=new Array(N).fill(0); if(!cfg||typeof cfg!=='object') return;
+    const focus=cfg.focus&&typeof cfg.focus==='object'?cfg.focus:{};
+    const spent=cfg.witness&&cfg.witness.spent&&typeof cfg.witness.spent==='object'?cfg.witness.spent:{};
+    const lit=new Set(Array.isArray(cfg.lit)?cfg.lit:[]);
+    const desc=cfg.descriptions&&typeof cfg.descriptions==='object'?cfg.descriptions:{};
+    let maxF=0; for(const k in focus){ const f=+focus[k]; if(f>maxF) maxF=f; }
+    for(let x=0;x<N;x++){ let w=0;
+      const f=+focus[x]||0; if(maxF>0&&f>0) w+=0.50*(f/maxF);
+      if(lit.has(x)) w+=0.25;
+      if(f>0){ const p=Math.min(+spent[x]||0,f); w+=0.15*(p/f); }
+      if(desc[x]) w+=0.10;
+      W[x]=Math.min(1,w); } }
+
   // the default key — the three pages' shared canon; descriptions for the origin and the crown
   function defaultKey(){ return { name:'the default city key', version:1,
     palette:{...pal},
@@ -249,7 +330,7 @@
   const $=id=>document.getElementById(id);
   let animT=null;
   function loadKey(cfg, fromRemote){ if(!cfg||typeof cfg!=='object') return;
-    A=cfg; applyPal(cfg.palette);
+    A=cfg; applyPal(cfg.palette); computeWeights(cfg);
     $('keyName').innerHTML='key: <b>'+esc(cfg.name||'imported key')+'</b>'+identHtml(cfg.identity);
     const c={...cfg}; delete c.kappa; const canon=canonicalJSON(c);
     $('canonBox').textContent=canon;
@@ -275,21 +356,68 @@
     return bits.length?' <span style="color:var(--dim)">· '+bits.join(' · ')+'</span>':''; }
   function provHtml(cfg){ const rows=[];
     rows.push('<b>'+Object.keys(cfg.descriptions||{}).length+'</b> described · <b>'+((cfg.lit&&cfg.lit.length)||0)+'</b> lit ✦ · <b>'+Object.keys(cfg.focus||{}).length+'</b> poured 🪢');
+    if(cfg.geometry&&typeof cfg.geometry==='object'){ const g=cfg.geometry, PHI=(1+Math.sqrt(5))/2,
+        sm=+g.smRatio, smTxt=Number.isFinite(sm)?(Math.abs(sm-PHI)<0.02?'φ '+sm.toFixed(3):sm.toFixed(3)):'—';
+      rows.push('shape: ε <b>'+(+g.eps||0).toFixed(3)+'</b> · m <b>'+(g.m|0)+'</b> · n <b>'+(g.n|0)+'</b> · det(Σ) <b>'+(+g.core||0).toFixed(2)+'</b> · ⚔️:🧙 <b>'+smTxt+'</b> — the ring wears it'); }
     if(cfg.trace) rows.push('trace: <b>'+(cfg.trace.laps||0)+'</b> laps · '+(cfg.trace.seconds||0)+'s succ · tour '+(cfg.trace.tourSeconds||0)+'s');
     if(cfg.witness) rows.push('witness: '+(cfg.witness.complete?'<b>complete ✓</b>':'partial')+' · '+(cfg.witness.at?esc(cfg.witness.at):''));
+    if(cfg.figures&&typeof cfg.figures==='object'){ const f=cfg.figures, parts=[],
+        vis=Array.isArray(f.visibility)?f.visibility.map(v=>(+v||0).toFixed(2)).join(' '):null;
+      if(Number.isFinite(+f.overlap)) parts.push('overlap <b>'+(+f.overlap).toFixed(2)+'</b>');
+      if(Number.isFinite(+f.ratio)) parts.push('⚔️:🧙 <b>'+(+f.ratio).toFixed(3)+'</b>');
+      if(vis) parts.push('visibility <b>'+vis+'</b>');
+      if(f.zkp) parts.push('⚡ <b>'+(f.zkp.verified|0)+'/'+(f.zkp.made|0)+'</b> proven');
+      rows.push('figures 📐 measured ('+esc(f.shapeCanon||'FIG-2.0')+'): '+(parts.join(' · ')||'—')); }
+    if(cfg.packets&&typeof cfg.packets==='object') rows.push('packets 🧾: <b>'+(cfg.packets.count|0)+'</b> trust-task proofs · root <b title="'+esc(String(cfg.packets.root||''))+'">'+esc(String(cfg.packets.root||'').slice(0,15))+'…</b>');
+    if(typeof cfg.prior==='string') rows.push('lineage 🔗: descends from <b title="'+esc(cfg.prior)+'">'+esc(cfg.prior.slice(0,15))+'…</b>');
     return rows.join('<br>'); }
 
   // ---- movement ② — the ring (succ-wheel constellation)
   const ring=$('ring'), rctx=ring.getContext('2d');
   function glyphAt(x){ if(!A_KAPPA) return null; return parseInt(A_KAPPA[7+x],16); }
+  // the ring WEARS the key's shape: the ε·cos(nθ) envelope of r(θ,φ)=R+ε sin(mφ)cos(nθ)
+  // (n=6 → six petals, one per dimension), ENGRAVED per vertex by the SHAPE-1.5 weight —
+  // the petals are the stance you chose; the relief on them is the work you did.
+  function ringR(base,a,x){ let r=base;
+    const g=A&&A.geometry, f=A&&A.figures;
+    if(g&&typeof g==='object'){ const eps=Math.max(0,Math.min(0.6,+g.eps||0)), n=Math.round(Math.max(1,Math.min(10,+g.n||6)));
+      let amp=0.45*eps;
+      // FIG-2.0 — measured visibility scales each dimension's petal (petal i centred at θ = i·π/3):
+      // the rosette stops being symmetric and becomes a sovereignty profile
+      if(f&&Array.isArray(f.visibility)&&f.visibility.length===6){
+        const th=a+Math.PI/2, i=((Math.round(th/(Math.PI/3))%6)+6)%6, vi=+f.visibility[i];
+        if(Number.isFinite(vi)) amp*=Math.max(0,Math.min(1,vi)); }
+      r*=(1+amp*Math.cos(n*(a+Math.PI/2))); }
+    if(typeof x==='number'&&W[x]>0) r*=(1+0.18*W[x]);
+    return r; }
+  // the perturbed space must fit the canvas: scale the base radii by the worst-case
+  // deformation (envelope peak × heaviest engraving) so petals + rune-row never clip
+  function ringMaxFactor(){ let f=1; const g=A&&A.geometry, fg=A&&A.figures;
+    if(g&&typeof g==='object'){ const eps=Math.max(0,Math.min(0.6,+g.eps||0));
+      let vmax=1;
+      if(fg&&Array.isArray(fg.visibility)&&fg.visibility.length===6){ vmax=0;
+        for(const v of fg.visibility){ const n=+v; if(Number.isFinite(n)) vmax=Math.max(vmax,Math.max(0,Math.min(1,n))); } }
+      f*=(1+0.45*eps*vmax); }
+    let mw=0; for(let x=0;x<N;x++) if(W[x]>mw) mw=W[x];
+    if(mw>0) f*=(1+0.18*mw); return f; }
+  function ringDims(w,margin){ const fit=ringMaxFactor();
+    const Rt=Math.min(w*0.465,(w/2-margin)/fit), R=Rt*(0.40/0.465);
+    return {R,Rt}; }
   function drawRing(){ const dpr=Math.min(window.devicePixelRatio||1,2), w=ring.clientWidth||520;
     ring.width=w*dpr; ring.height=w*dpr; rctx.setTransform(dpr,0,0,dpr,0,0); rctx.clearRect(0,0,w,w);
-    const cx=w/2, cy=w/2, R=w*0.40, Rt=w*0.465;
-    // faint succ track
-    rctx.beginPath(); rctx.arc(cx,cy,R,0,Math.PI*2); rctx.strokeStyle='rgba(191,224,255,0.14)'; rctx.lineWidth=1; rctx.stroke();
-    for(let x=0;x<N;x++){ const a=(x/N)*Math.PI*2-Math.PI/2, px=cx+R*Math.cos(a), py=cy+R*Math.sin(a);
+    const cx=w/2, cy=w/2, {R,Rt}=ringDims(w,14);
+    // faint succ track — follows the shape envelope
+    rctx.beginPath();
+    for(let i=0;i<=192;i++){ const a=(i/192)*Math.PI*2-Math.PI/2, rr=ringR(R,a);
+      const tx=cx+rr*Math.cos(a), ty=cy+rr*Math.sin(a); i?rctx.lineTo(tx,ty):rctx.moveTo(tx,ty); }
+    rctx.closePath(); rctx.strokeStyle='rgba(191,224,255,0.14)'; rctx.lineWidth=1; rctx.stroke();
+    // FIG-2.0 ⚡ petal — measured proof activity floors the Computation petal's brightness (d₅ · petal 4)
+    const zk=A&&A.figures&&A.figures.zkp&&typeof A.figures.zkp==='object'?A.figures.zkp:null;
+    const zfloor=zk?0.30+0.55*Math.min(1,(+zk.verified||0)/Math.max(1,+zk.made||0)):0;
+    for(let x=0;x<N;x++){ const a=(x/N)*Math.PI*2-Math.PI/2, rv=ringR(R,a,x), px=cx+rv*Math.cos(a), py=cy+rv*Math.sin(a);
       const g=glyphAt(x), t=pc(x)/BITS;
-      const inten=g===null?0.3:(0.12+0.88*g/15), rad=g===null?2.6:(2.2+5.2*g/15);
+      let inten=g===null?0.3:(0.12+0.88*g/15); const rad=g===null?2.6:(2.2+5.2*g/15);
+      if(zk&&((Math.round((x/N*2*Math.PI)/(Math.PI/3))%6)+6)%6===4) inten=Math.max(inten,zfloor);
       // glow
       if(g!==null&&g>0){ const gr=rctx.createRadialGradient(px,py,0,px,py,rad*3.2);
         gr.addColorStop(0,grad(t,0.5*inten)); gr.addColorStop(1,grad(t,0));
@@ -298,10 +426,14 @@
       if(sel===x){ rctx.strokeStyle='#fff'; rctx.lineWidth=1.5; rctx.beginPath(); rctx.arc(px,py,rad+3.5,0,Math.PI*2); rctx.stroke(); }
       if(ping===x&&performance.now()-pingT<2400){ rctx.strokeStyle=pal.sword; rctx.lineWidth=1.5; rctx.beginPath(); rctx.arc(px,py,rad+6,0,Math.PI*2); rctx.stroke(); }
       // glyph character on the outer rune-row
-      const gx=cx+Rt*Math.cos(a), gy=cy+Rt*Math.sin(a);
+      const rg=ringR(Rt,a,x), gx=cx+rg*Math.cos(a), gy=cy+rg*Math.sin(a);
       rctx.font='10px "Spline Sans Mono",monospace'; rctx.textAlign='center'; rctx.textBaseline='middle';
       rctx.fillStyle=g===null?'rgba(124,134,184,0.35)':grad(t,0.35+0.65*inten);
       rctx.fillText(g===null?'·':g.toString(16),gx,gy); }
+    // ⚡ proof-count engraving at the Computation petal's tip
+    if(zk){ const za=(4*Math.PI/3)-Math.PI/2, zr=ringR(R,za)*0.80; // inside the dot ring — never clips the fitted canvas
+      rctx.font='10px "Spline Sans Mono",monospace'; rctx.textAlign='center'; rctx.textBaseline='middle';
+      rctx.fillStyle='rgba(255,214,199,0.9)'; rctx.fillText('⚡ '+(zk.verified|0)+'/'+(zk.made|0),cx+zr*Math.cos(za),cy+zr*Math.sin(za)); }
     // centre — name + κ short
     rctx.textAlign='center';
     rctx.font='italic 300 22px Fraunces,serif'; rctx.fillStyle='#e8edff';
@@ -309,9 +441,9 @@
     rctx.font='10px "Spline Sans Mono",monospace'; rctx.fillStyle='rgba(124,134,184,0.9)';
     rctx.fillText(A_KAPPA?(A_KAPPA.slice(0,23)+'…'):'import a key to constellate',cx,cy+12);
     $('ringCap').textContent=A_KAPPA?('κ '+A_KAPPA.slice(0,23)+'…'):''; }
-  function ringVertexAt(ev){ const r=ring.getBoundingClientRect(), w=r.width, cx=w/2, cy=w/2, R=w*0.40;
+  function ringVertexAt(ev){ const r=ring.getBoundingClientRect(), w=r.width, cx=w/2, cy=w/2, {R}=ringDims(w,14);
     const mx=ev.clientX-r.left-cx, my=ev.clientY-r.top-cy, d=Math.hypot(mx,my);
-    if(d<R*0.55||d>R*1.25) return -1;
+    if(d<R*0.5||d>R*1.6) return -1;
     let a=Math.atan2(my,mx)+Math.PI/2; if(a<0)a+=Math.PI*2;
     return Math.round(a/(Math.PI*2)*N)%N; }
   function inspect(x){ if(x<0){ return; } sel=x; drawRing();
@@ -319,6 +451,7 @@
     for(let b=0;b<BITS;b++) ((x>>b)&1?held:open).push(DIMS[b]);
     $('inspect').innerHTML='vertex <b>'+x+'</b> · '+b6(x)+' · stratum '+pc(x)+
       (g===null?'':' · glyph <b>'+g.toString(16)+'</b> ('+g+'/15)')+
+      (W[x]>0?' · engraving <b>'+W[x].toFixed(2)+'</b> 🪢':'')+
       '<br><span class="dims">holds: '+(held.length?held.join(' · '):'nothing — the unguarded origin')+'</span>'+
       '<br>⚔️ neg '+neg(x)+' · 🧙 bnot '+bnot(x)+' · 😊 succ '+succ(x); }
   ring.addEventListener('mousemove',ev=>{ const x=ringVertexAt(ev); if(x>=0&&x!==sel) inspect(x); });
@@ -327,18 +460,19 @@
 
   // sigil PNG — self-describing: the κ caption is embedded
   $('snapBtn').addEventListener('click',()=>{ if(!A_KAPPA) return;
-    const S=900, cv=document.createElement('canvas'); cv.width=S; cv.height=S+70; const c2=cv.getContext('2d');
+    const S=1024, cv=document.createElement('canvas'); cv.width=S; cv.height=S+70; const c2=cv.getContext('2d');
     c2.fillStyle='#060812'; c2.fillRect(0,0,S,S+70);
-    // re-render at export size
-    const cx=S/2, cy=S/2, R=S*0.40, Rt=S*0.46;
-    for(let x=0;x<N;x++){ const a=(x/N)*Math.PI*2-Math.PI/2, px=cx+R*Math.cos(a), py=cy+R*Math.sin(a);
+    // re-render at export size — wider canvas + fit-scaled radii so the perturbed space reflects fully
+    const cx=S/2, cy=S/2, {R,Rt}=ringDims(S,34);
+    for(let x=0;x<N;x++){ const a=(x/N)*Math.PI*2-Math.PI/2, rv=ringR(R,a,x), px=cx+rv*Math.cos(a), py=cy+rv*Math.sin(a);
       const g=parseInt(A_KAPPA[7+x],16), t=pc(x)/BITS, inten=0.12+0.88*g/15, rad=4+9*g/15;
       if(g>0){ const gr=c2.createRadialGradient(px,py,0,px,py,rad*3.2);
         gr.addColorStop(0,grad(t,0.5*inten)); gr.addColorStop(1,grad(t,0));
         c2.fillStyle=gr; c2.beginPath(); c2.arc(px,py,rad*3.2,0,Math.PI*2); c2.fill(); }
       c2.fillStyle=grad(t,Math.max(0.18,inten)); c2.beginPath(); c2.arc(px,py,rad,0,Math.PI*2); c2.fill();
+      const rg=ringR(Rt,a,x);
       c2.font='16px monospace'; c2.textAlign='center'; c2.textBaseline='middle';
-      c2.fillStyle=grad(t,0.35+0.65*inten); c2.fillText(g.toString(16),cx+Rt*Math.cos(a),cy+Rt*Math.sin(a)); }
+      c2.fillStyle=grad(t,0.35+0.65*inten); c2.fillText(g.toString(16),cx+rg*Math.cos(a),cy+rg*Math.sin(a)); }
     c2.textAlign='center'; c2.font='italic 300 40px Fraunces,serif'; c2.fillStyle='#e8edff'; c2.fillText(A.name||'city key',cx,cy-14);
     c2.font='15px monospace'; c2.fillStyle='rgba(174,184,238,0.95)'; c2.fillText('(⚔️ ⊥ ⿻ ⊥ 🧙) 😊',cx,cy+22);
     c2.font='13px monospace'; c2.fillStyle='rgba(124,134,184,0.95)'; c2.fillText(A_KAPPA,S/2,S+34);
@@ -350,16 +484,50 @@
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); });
 
   // ---- movement ③ — compare
-  function buildGrid8(el,kappa){ el.innerHTML='';
+  // each grid renders in ITS OWN key's palette — B is B's voice, not A's
+  function palOf(cfg){ const d={cool:'#141a3d',warm:'#f0eee8',sword:'#e8523a',mage:'#4dd9e8'};
+    const p=cfg&&cfg.palette&&typeof cfg.palette==='object'?cfg.palette:{};
+    return { cool:typeof p.cool==='string'?p.cool:d.cool, warm:typeof p.warm==='string'?p.warm:d.warm,
+             sword:typeof p.sword==='string'?p.sword:d.sword, mage:typeof p.mage==='string'?p.mage:d.mage }; }
+  function gradWith(p){ const C=hex2hsl(p.cool), Wm=hex2hsl(p.warm);
+    return (t,alpha)=>{ t=Math.max(0,Math.min(1,t));
+      let dh=Wm.h-C.h; if(dh>0.5)dh-=1; if(dh<-0.5)dh+=1;
+      const h=(C.h+dh*t+1)%1, s=Math.min(1,C.s+(Wm.s-C.s)*t+0.06*Math.sin(t*Math.PI)), l=Math.min(1,C.l+(Wm.l-C.l)*t+0.04*Math.sin(t*Math.PI));
+      return `hsla(${(h*360).toFixed(0)},${(s*100).toFixed(0)}%,${(l*100).toFixed(0)}%,${alpha===undefined?1:alpha})`; }; }
+  // which vertices a key has actually touched (content, not hash): lit · described · poured · proven
+  function touched(cfg){ const out=new Array(N).fill(null); if(!cfg||typeof cfg!=='object') return out;
+    const desc=cfg.descriptions||{}, focus=cfg.focus||{}, spent=(cfg.witness&&cfg.witness.spent)||{};
+    const lit=new Set(Array.isArray(cfg.lit)?cfg.lit:[]);
+    for(let x=0;x<N;x++){ const tags=[];
+      if(lit.has(x)) tags.push('✦ lit');
+      if(desc[x]) tags.push('described');
+      if(+focus[x]>0) tags.push('🪢 '+(+focus[x])+' poured');
+      if(+spent[x]>0) tags.push('proven '+(+spent[x]));
+      out[x]=tags.length?tags:null; } return out; }
+  function buildGrid8(el,kappa,cfg){ el.innerHTML=''; const G=gradWith(palOf(cfg));
     for(let x=0;x<N;x++){ const d=document.createElement('div'); d.className='gcell'; d.dataset.v=x;
       const g=kappa?parseInt(kappa[7+x],16):0, t=pc(x)/BITS, inten=0.10+0.90*g/15;
-      d.style.background=grad(t,inten); d.textContent=kappa?g.toString(16):''; d.title='vertex '+x+' · '+b6(x);
+      d.style.background=G(t,inten); d.textContent=kappa?g.toString(16):''; d.title='vertex '+x+' · '+b6(x);
       el.appendChild(d); } }
+  function buildOverlap(){ const TA=touched(A), TB=touched(B), el=$('gridOv'); el.innerHTML='';
+    let both=0,onlyA=0,onlyB=0;
+    for(let x=0;x<N;x++){ const d=document.createElement('div'); const a=TA[x],b=TB[x];
+      let cls='ov-none', mark='';
+      if(a&&b){ cls='ov-both'; mark='∩'; both++; }
+      else if(a){ cls='ov-a'; mark='a'; onlyA++; }
+      else if(b){ cls='ov-b'; mark='b'; onlyB++; }
+      d.className='gcell '+cls; d.textContent=mark||x;
+      d.title='vertex '+x+' · '+b6(x)+(a?'\nA: '+a.join(' · '):'\nA: —')+(b?'\nB: '+b.join(' · '):'\nB: —');
+      el.appendChild(d); }
+    $('ovsum').innerHTML='common ground <b>'+both+'</b> of 64 · only A '+onlyA+' · only B '+onlyB+' · untouched '+(N-both-onlyA-onlyB);
+    $('ovwrap').style.display='';
+    return {both,onlyA,onlyB}; }
   function buildCompare(){ if(!(A_KAPPA&&B_KAPPA)) return;
     $('cgrids').style.display='';
     $('cgnA').textContent=A.name||'key A'; $('cgnB').textContent=B.name||'key B';
     $('kshortA').textContent=A_KAPPA; $('kshortB').textContent=B_KAPPA;
-    buildGrid8($('gridA'),A_KAPPA); buildGrid8($('gridB'),B_KAPPA);
+    buildGrid8($('gridA'),A_KAPPA,A); buildGrid8($('gridB'),B_KAPPA,B);
+    const ov=buildOverlap();
     let dv=0;
     for(let x=0;x<N;x++){ if(A_KAPPA[7+x]!==B_KAPPA[7+x]){ dv++;
       $('gridA').children[x].classList.add('diff'); $('gridB').children[x].classList.add('diff'); } }
@@ -372,15 +540,23 @@
     const dvs=[...new Set([...Object.keys(da),...Object.keys(db)])].filter(k=>String(da[k]||'')!==String(db[k]||''));
     $('difflist').innerHTML = A_KAPPA===B_KAPPA
       ? '<span class="same">✓ identical κ — identical content. One identity, twice imported.</span>'
-      : '<b>'+dv+'</b> of 64 sigil glyphs diverge — <i>that</i> they differ (pulsed above). <i>Where</i> they differ: <b>'+(diffs.length?diffs.join(' · '):'none — formatting only')+'</b>'+
+      : '<span class="same">common ground: <b>'+ov.both+'</b> of 64</span> — territory both keys have walked (teal ∩ above). Two identities, one shared map.'+
+        '<br>divergence: <b>'+dv+'</b> of 64 sigil glyphs (pulsed below) · fields that differ: <b>'+(diffs.length?diffs.join(' · '):'none — formatting only')+'</b>'+
         (dvs.length?('<br>descriptions diverging at vertices: <b>'+dvs.sort((a,b)=>a-b).join(', ')+'</b>'):'')+
-        '<br><span style="color:var(--dim)">two contents, two identities — the κ does not negotiate.</span>'; }
+        '<br><span style="color:var(--dim)">the κ does not negotiate — but the ground can still be common.</span>'; }
 
   // ---- import wiring + the default key
   $('impBtn').addEventListener('click',()=>$('impFile').click());
   $('impFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
     readKeyFile(f,cfg=>loadKey(cfg,false),()=>{ $('keyName').textContent='⚠ no City Key in this file (expects key JSON or a sigil PNG)'; }); e.target.value=''; });
   $('dfltBtn').addEventListener('click',()=>loadKey(defaultKey(),false));
+  $('vpktBtn').addEventListener('click',()=>$('vpktFile').click());
+  $('vpktFile').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{ const pv=$('pktVerdict'); pv.style.display='block'; pv.className='verdict'; pv.textContent='verifying…';
+      let j=null; try{ j=JSON.parse(r.result); }catch(_){ }
+      Promise.resolve(j?verifyPacketsBundle(j):'⚠ could not parse JSON.').then(html=>{ pv.innerHTML=html; }); };
+    r.readAsText(f); e.target.value=''; });
   $('impBtn2').addEventListener('click',()=>$('impFile2').click());
   $('impFile2').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f)return;
     readKeyFile(f,cfg=>{ B=cfg; $('keyName2').innerHTML='B: <b>'+esc(B.name||'imported key')+'</b>';

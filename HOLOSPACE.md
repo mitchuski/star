@@ -85,10 +85,20 @@ Consumers that don't know the field ignore it (verified against agentprivacy's
 `/sigil` exports the key's constellation as a PNG that **carries the key**: the
 full City Key JSON, base64-encoded, in a PNG `tEXt` chunk (keyword `cityKey`)
 inserted before `IEND`, with a correct CRC-32 — the image stays a valid PNG for
-every viewer, and the κ caption is also visible in the pixels. All three pages
-import the PNG as readily as the JSON (the import branches on the PNG signature).
-The artifact is self-describing *and* self-carrying: share the picture, you have
-shared the key.
+every viewer, and the κ caption is also visible in the pixels. All four
+key-reading pages (/star · /lattice · /sigil · /skye) import the PNG as readily
+as the JSON (the import branches on the PNG signature). The artifact is
+self-describing *and* self-carrying: share the picture, you have shared the key.
+
+Two sibling carriers (2026-06-11):
+
+- **The sky shot** — `/skye`'s 📸 export uses the same chunk grammar one rung
+  up: keyword **`citySky`**, payload `{version, sky:true, keys:[…]}` — one
+  picture carrying a *set* of keys; re-importing it on /skye raises the whole
+  night. `cityKey` readers ignore the `citySky` chunk by design.
+- **The ⚡ charge pass** — `/lattice`'s redacted JSON export
+  (`{version, redacted:true, of, trace, witness, kappa}`): only the proof
+  travels; agentprivacy `/city` charges it exactly like the full key.
 
 ## Boot
 
