@@ -190,7 +190,7 @@
         <span class="lk">the lineage · prior</span><span class="lv">an <i>evolved</i> export stamps <code>prior</code> = the κ of the key it grew from — keys form a hash chain (C87: <i>the key accumulates</i>). An unchanged re-export keeps its prior and its κ unchanged: lineage marks evolution, not circulation.</span>
         <span class="lk">vocabulary</span><span class="lv"><b>glyph</b> — one hex character at one vertex · <b>rune-row</b> — the 64 in succ order · <b>sigil</b> — the whole lighting, the key's face. (The City's runes keep their own register; the sigil is the Swordsman's seal.)</span>
       </div>
-      <p style="margin-top:14px;font-size:11px;color:var(--dim);line-height:1.6">Model: <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a> (PVM V5.4 / V6) · substrate: <a href="https://github.com/Hologram-Technologies/holospaces" target="_blank" rel="noopener noreferrer">holospaces</a> · this repo's seam: <code>HOLOSPACE.md</code>.</p>
+      <p style="margin-top:14px;font-size:11px;color:var(--dim);line-height:1.6">Model: <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a> (PVM V6 · V5.4 lineage) · substrate: <a href="https://github.com/Hologram-Technologies/holospaces" target="_blank" rel="noopener noreferrer">holospaces</a> · this repo's seam: <code>HOLOSPACE.md</code>.</p>
     </div>
   </details>
 
@@ -206,7 +206,9 @@
   const pc=x=>{let c=0;while(x){c+=x&1;x>>=1;}return c;};
   const b6=x=>x.toString(2).padStart(BITS,'0');
   const esc=s=>String(s).replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-  // PVM V5.4 §12.6 — bit i (LSB-first) = dimension d(i+1)
+  // PVM §12.6 numeric encoding (MODEL lock · unified 2026-06-12): d₁ is the HIGH bit —
+  // the vertex binary string b₅b₄b₃b₂b₁b₀ reads d₁d₂d₃d₄d₅d₆ left to right.
+  // Anchors: V38=100110=🛡️🔗⚡ (Aletheia) · V25=011001=🤝📜💎 (Lethe) · V41=101001=🛡️📜💎 (Memora)
   const DIMS=['🛡️ Protection','🤝 Delegation','📜 Memory','🔗 Connection','⚡ Computation','💎 Value'];
 
   // ---- κ-label (UOR-ADDR · sha256 axis) — same canon as /star + /lattice
@@ -448,7 +450,7 @@
     return Math.round(a/(Math.PI*2)*N)%N; }
   function inspect(x){ if(x<0){ return; } sel=x; drawRing();
     const g=glyphAt(x), held=[],open=[];
-    for(let b=0;b<BITS;b++) ((x>>b)&1?held:open).push(DIMS[b]);
+    for(let b=BITS-1;b>=0;b--) ((x>>b)&1?held:open).push(DIMS[5-b]); // d₁ first
     $('inspect').innerHTML='vertex <b>'+x+'</b> · '+b6(x)+' · stratum '+pc(x)+
       (g===null?'':' · glyph <b>'+g.toString(16)+'</b> ('+g+'/15)')+
       (W[x]>0?' · engraving <b>'+W[x].toFixed(2)+'</b> 🪢':'')+

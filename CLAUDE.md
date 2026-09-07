@@ -31,9 +31,12 @@ byte-identical with the soulbis website copies; sync by `cp`, verify by byte
 compare.
 
 The κ-constellation correspondence: SHA-256 = 64 hex glyphs = one per vertex; the six
-dimensions are named per PVM V5.4 §12.6 (d₁🛡️ Protection · d₂🤝 Delegation ·
-d₃📜 Memory · d₄🔗 Connection · d₅⚡ Computation · d₆💎 Value, bit 0 = d₁), and
-C85 pairs them onto Σ/Δ/Γ.
+dimensions are named per PVM §12.6 (d₁🛡️ Protection · d₂🤝 Delegation ·
+d₃📜 Memory · d₄🔗 Connection · d₅⚡ Computation · d₆💎 Value), and C85 pairs
+them onto Σ/Δ/Γ. **Numeric encoding (MODEL lock · unified 2026-06-12): d₁ is
+the HIGH bit (2⁵)** — a vertex’s binary string reads d₁…d₆ left to right.
+Anchors: V38 = 100110 = 🛡️🔗⚡ (Aletheia) · V25 = 011001 = 🤝📜💎 (Lethe) ·
+V41 = 101001 = 🛡️📜💎 (Memora). Never read d₁ at the low bit.
 
 Each page is **fully self-contained** (inline CSS + JS). Shared logic — palette
 presets, City Key handling, κ-label helpers — is deliberately **duplicated**, not
@@ -54,7 +57,7 @@ core    = stella octangula · φ ratio conjectured optimal ⚔️:🧙 (C1)
 
 The equation chip, the legend on /lattice, and these constants must agree across
 all suite pages. The model's canonical home is agentprivacy.ai/model (PVM V6 ·
-The Gathering Turn and the Moving Ceiling · register head C89; the V5.4 weights
+The Gathering Turn and the Moving Ceiling · register head C96; the V5.4 weights
 remain on the page as labeled lineage).
 
 ## City Key 🗝️ (portable JSON)

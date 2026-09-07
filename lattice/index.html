@@ -118,7 +118,7 @@
   .link-dot.live{ background:var(--sword); box-shadow:0 0 8px var(--sword); }
   @media (max-width:820px){ .wrap{ grid-template-columns:1fr; } .panel{ position:static; } }
 
-  /* PVM legend — geometry ↔ Privacy Value Model V5.4 (collapsible; this is the roomy page for it) */
+  /* PVM legend — geometry ↔ Privacy Value Model V6 (collapsible; this is the roomy page for it) */
   .legend{ max-width:1180px; margin:24px auto 0; background:var(--glass); border:1px solid var(--line); border-radius:16px; backdrop-filter:blur(12px); overflow:hidden; }
   .legend>summary{ list-style:none; cursor:pointer; padding:16px 20px; font-size:12px; letter-spacing:0.06em; color:#ffd6c7; }
   .legend>summary::-webkit-details-marker{ display:none; }
@@ -182,7 +182,7 @@
   </div>
 
   <details class="legend">
-    <summary>📖 The legend — geometry ↔ Privacy Value Model V5.4</summary>
+    <summary>📖 The legend — geometry ↔ Privacy Value Model V6</summary>
     <div class="legend-body">
       <p class="legend-eq">This renders <b>V(π,t)</b> = P<sup>1.5</sup> · C · Q · S · … · <b>Φ_agent</b>(Σ) · … · <b>T∫(π)</b> — a holographic field on the 96-edge boundary ∂M. The codex shows the lattice ℒ and the path; the 3D <a href="/star">/star manifold</a> shows the agent axis and the boundary.</p>
       <div class="legend-grid">
@@ -200,7 +200,7 @@
         <span class="lk">κ · content identity</span><span class="lv">exported keys carry <code>kappa = sha256:H(canonical form)</code> — a UOR-ADDR κ-label on the sha256 axis. On import the label is <b>re-derived and checked</b>: identity is content, not location. The key is what it says, wherever it travels.</span>
         <span class="lk">✍️ inscription</span><span class="lv">a <b>proven</b> blade — focus walked to ✓, or achievement-lit ✦ — accepts your own reading. Writing changes the content; the content drifts the κ; the sigil relights. <b>Authorship is earned by presence.</b></span>
       </div>
-      <p class="legend-foot">Tags follow the V5.4 spec: <i>[proven] / [canon] / [conjecture]</i>. Full map in <code>MAPPING.md</code>; the model at <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a>.</p>
+      <p class="legend-foot">Tags follow the V5.4 spec: <i>[proven] / [canon] / [conjecture]</i>; conjecture authority now lives in the V6 register — when prose and register disagree, the register wins. Full map in <code>MAPPING.md</code>; the model at <a href="https://agentprivacy.ai/model" target="_blank" rel="noopener noreferrer">agentprivacy.ai/model</a>.</p>
     </div>
   </details>
 
@@ -214,7 +214,9 @@
 (function(){
   "use strict";
   const BITS=6, N=64, STRATA=[1,6,15,20,15,6,1];
-  // PVM V5.4 §12.6 — bit i (LSB-first) = dimension d(i+1)
+  // PVM §12.6 numeric encoding (MODEL lock · unified 2026-06-12): d₁ is the HIGH bit —
+  // the vertex binary string b₅b₄b₃b₂b₁b₀ reads d₁d₂d₃d₄d₅d₆ left to right.
+  // Anchors: V38=100110=🛡️🔗⚡ (Aletheia) · V25=011001=🤝📜💎 (Lethe) · V41=101001=🛡️📜💎 (Memora)
   const DIMS=['🛡️ Protection','🤝 Delegation','📜 Memory','🔗 Connection','⚡ Computation','💎 Value'];
   const DIM_E=['🛡️','🤝','📜','🔗','⚡','💎'];
   const neg=x=>(N-x)%N, bnot=x=>(N-1)-x, succ=x=>(x+1)%N;
@@ -351,8 +353,8 @@
       return `<div class="inslock">🔏 inscription locked — prove 🪢 focus here (pour at /city · walk it on this page) or light it by achievement.</div>`;
     return `<div class="insbox"><textarea id="insText" rows="4" maxlength="280" placeholder="your reading of this blade…">${esc(DESC[x]||'')}</textarea><div class="insrow"><button id="insBtn" class="btn" title="write your reading onto this proven blade — changes the key's content, drifts its κ">✍️ inscribe</button><span class="inscount" id="insCount"></span></div></div>`; }
   function renderPanel(){ const x=sel,s=pc(x);
-    const bits=b6(x).split('').map((c,i)=>`<div class="bit ${c==='1'?'on':''}" title="${DIMS[5-i]}">${DIM_E[5-i]}<br>${c}</div>`).join('');
-    const held=[]; for(let b=0;b<BITS;b++) if((x>>b)&1) held.push(DIMS[b]);
+    const bits=b6(x).split('').map((c,i)=>`<div class="bit ${c==='1'?'on':''}" title="${DIMS[i]}">${DIM_E[i]}<br>${c}</div>`).join('');
+    const held=[]; for(let b=BITS-1;b>=0;b--) if((x>>b)&1) held.push(DIMS[5-b]); // d₁ first
     const has=!!DESC[x];
     const desc = has ? `<span class="tag">from the loaded key</span>${DESC[x]}` : `<span class="tag">no description · import a key</span>${derivedReading(x)}`;
     panel.innerHTML = `
