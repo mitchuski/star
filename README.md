@@ -53,3 +53,7 @@ Static HTML, no build step. Deploys anywhere that serves a directory
 ---
 
 `(⚔️ ⊥ ⿻ ⊥ 🧙) 😊` — privacymage / 0xagentprivacy
+
+## VTA + Star: agent knowledge spaces (2026-09-08)
+
+[Star carry and first contact](guide/VTA_STAR_KNOWLEDGE_SPACES.md) records this surface's responsibilities and acceptance gates. The shared design places FedWiki records, browser-carried Star state, first-contact intent, MCP Trust Tasks, VTA permission enforcement and earned Mages City names in one continuing journey. Status is explicitly partial; follow the note's source and deployment distinctions.

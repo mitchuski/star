@@ -380,7 +380,7 @@
         const t=(ta.value||'').trim();
         if(t) DESC[sel]=t; else delete DESC[sel];
         markDesc(); renderPanel(); refreshLiveKappa();
-        send({config:buildExportCfg()}); // the inscription cascades live — /star and /sigil relight
+        readyExportCfg().then(config=>send({config})); // the inscription cascades live — /star and /sigil relight
       }); }
   }
 
@@ -406,7 +406,7 @@
     document.querySelectorAll('#sort button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); order=b.dataset.s; buildGrid(); if(playing)paintComet(head); }));
 
   // ---- City Key : import / export ----
-  let keyName='', FIGS=null, PKTS=null, DID=null, WIT_IN=null, PRIOR_IN=null, LOADED_CANON=null, LOADED_KAPPA=null;
+  let keyName='', FIGS=null, PKTS=null, DID=null, WIT_IN=null, PRIOR_IN=null, LOADED_CANON=null, LOADED_KAPPA=null, CARRIED={}, LOAD_EPOCH=0, LOAD_READY=Promise.resolve();
   // FIGS — FIG-2.0 measured figures: /star derives shape from them; round-tripped here untouched.
   // PKTS / DID — trust-task fields minted at /city (packets Merkle digest · bearer did):
   // round-tripped untouched so a walk never destroys them (content — inside the κ preimage).
@@ -422,7 +422,11 @@
       if(identity.drakeOrb) bits.push('🐉 '+esc(identity.drakeOrb));
       if(bits.length) extra=` <span style="color:var(--dim)">· ${bits.join(' · ')}</span>`; }
     el.innerHTML = `key: <b>${esc(keyName)}</b>${extra}`; }
-  function loadConfig(cfg, fromRemote){ if(!cfg||typeof cfg!=='object')return;
+  function loadConfig(cfg, fromRemote){ if(!cfg||typeof cfg!=='object'||Array.isArray(cfg))return;
+    // Full keys carry opaque extensions; only this surface's reading fields are rebuilt.
+    CARRIED={...cfg};
+    for(const field of ["name","version","palette","descriptions","geometry","lit","identity","trace","figures","packets","did","kappa","prior","focus","witness"]) delete CARRIED[field];
+    DESC={};
     if(cfg.palette){ ['cool','warm','sword','mage'].forEach(k=>{ if(typeof cfg.palette[k]==='string') pal[k]=cfg.palette[k]; }); applyPalette(); }
     if(cfg.descriptions && typeof cfg.descriptions==='object'){ DESC={}; for(const k in cfg.descriptions){ const n=+k; if(n>=0&&n<N) DESC[n]=String(cfg.descriptions[k]); } }
     LIT = new Set(Array.isArray(cfg.lit) ? cfg.lit.filter(n=>Number.isInteger(n)&&n>=0&&n<N) : []);
@@ -437,12 +441,14 @@
     if(cfg.witness && cfg.witness.spent && typeof cfg.witness.spent==='object'){ for(const k in cfg.witness.spent){ const v=+k, amt=+cfg.witness.spent[k]; if(FOCUS[v]&&amt>0) VISITED[v]=Math.min(amt,FOCUS[v]); } }
     PRIOR_IN = (typeof cfg.prior==='string') ? cfg.prior : null;
     { const c={...cfg}; delete c.kappa; delete c.prior; LOADED_CANON=canonicalJSON(c); }
-    LOADED_KAPPA=null; kappaLabel(cfg).then(k=>{ LOADED_KAPPA=k||((typeof cfg.kappa==='string')?cfg.kappa:null); });
+    LOADED_KAPPA=null;
+    const epoch=++LOAD_EPOCH;
+    LOAD_READY=kappaLabel(cfg).then(k=>{ if(epoch===LOAD_EPOCH) LOADED_KAPPA=k||((typeof cfg.kappa==='string')?cfg.kappa:null); });
     markDesc(); markFocus(); updateFocusBar();
     setKeyName(cfg.name||'imported key', cfg.identity); renderPanel(); verifyKappa(cfg);
     KEYCFG=cfg; LIVEK=null; refreshLiveKappa();
     if(!fromRemote) send({config:cfg}); }
-  function buildExportCfg(){ const cfg={ name:keyName||'city key', version:1, palette:{...pal}, descriptions:{...DESC} };
+  function buildExportCfg(){ const cfg={ ...CARRIED, name:keyName||'city key', version:1, palette:{...pal}, descriptions:{...DESC} };
     if(LIT.size) cfg.lit=[...LIT].sort((a,b)=>a-b);
     if(IDENT) cfg.identity=IDENT;
     if(TRACEC) cfg.trace=TRACEC;
@@ -464,12 +470,14 @@
       if(!s){ s=document.createElement('span'); s.className='kg'; c.appendChild(s); }
       s.textContent=v.toString(16); s.style.opacity=(0.25+0.75*v/15).toFixed(2); } }
   function refreshLiveKappa(){ if(!KEYCFG) return; clearTimeout(_kT);
-    _kT=setTimeout(()=>{ kappaLabel(buildExportCfg()).then(k=>{ if(!k) return; LIVEK=k; paintKGlyphs();
+    _kT=setTimeout(()=>{ readyExportCfg().then(cfg=>kappaLabel(cfg)).then(k=>{ if(!k) return; LIVEK=k; paintKGlyphs();
       const el=document.getElementById('kdrift'); if(!el) return;
       const stamped=KEYCFG.kappa;
       if(typeof stamped==='string') el.innerHTML = stamped===k ? '' : 'κ drifting → <b>'+esc(k.slice(7,15))+'…</b> · export to mint';
       else el.innerHTML='κ → <b>'+esc(k.slice(7,15))+'…</b> · unminted'; }); },350); }
-  function exportKey(){ const cfg=buildExportCfg();
+  // Wait for the current import's identity; a newer import invalidates older hash work.
+  async function readyExportCfg(){ let epoch; do { epoch=LOAD_EPOCH; await LOAD_READY; } while(epoch!==LOAD_EPOCH); return buildExportCfg(); }
+  async function exportKey(){ const cfg=await readyExportCfg();
     kappaLabel(cfg).then(k=>{ if(k) cfg.kappa=k; // the key's content identity, stamped at export
       const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}), a=document.createElement('a');
       a.href=URL.createObjectURL(blob); a.download='city-key.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }); }
@@ -480,14 +488,14 @@
   // ⚡ charge pass — the redacted carrier: only the PROOF travels. {version, redacted, of, trace, witness, κ}
   // `of` names the full key it was struck from (its would-be export κ); /city charges trace+witness
   // without ever seeing inscriptions, palette, focus amounts or identity. Portability minus disclosure.
-  function exportChargePass(){
-    const w=buildWitness();
-    if(!TRACEC&&!w){ const el=document.getElementById('kdrift');
+  async function exportChargePass(){
+    const full=await readyExportCfg();
+    const w=full.witness;
+    if(!full.trace&&!w){ const el=document.getElementById('kdrift');
       if(el){ el.textContent='nothing to charge yet — walk the manifold or prove focus first'; setTimeout(()=>{ el.textContent=''; },3000); } return; }
-    const full=buildExportCfg();
     kappaLabel(full).then(fk=>{ const cfg={ version:1, redacted:true };
       if(fk) cfg.of=fk;
-      if(TRACEC) cfg.trace=TRACEC;
+      if(full.trace) cfg.trace=full.trace;
       if(w) cfg.witness=w;
       kappaLabel(cfg).then(k=>{ if(k) cfg.kappa=k;
         const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}), a=document.createElement('a');

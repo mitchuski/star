@@ -535,7 +535,7 @@
 
   const toast=gid('toast'); let toastT;
   function showToast(msg,ms){ toast.textContent=msg; toast.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>toast.classList.remove('show'),ms||2200); }
-  function snapshot(){ renderer.setClearColor(0x060812,1); renderer.render(scene,camera); // bake the dark backdrop so the export matches the screen (no jarring white)
+  async function snapshot(){ renderer.setClearColor(0x060812,1); renderer.render(scene,camera); // bake the dark backdrop so the export matches the screen (no jarring white)
     let url=null;
     try{ url=renderer.domElement.toDataURL('image/png'); }catch(err){ showToast('snapshot blocked in preview — works when deployed'); }
     renderer.setClearColor(0x000000,0); // restore transparent for live render (page backdrop shows through)
@@ -547,7 +547,7 @@
       showToast('snapshot saved · '+name+(carried?' · carries your City Key 🗝️':'')); };
     if(!keyLoaded){ fin(url,false); return; }
     // a loaded key rides inside the snapshot — the picture becomes the artifact
-    const cfg=buildExportCfg();
+    const cfg=await readyExportCfg();
     kappaLabel(cfg).then(k=>{ if(k) cfg.kappa=k;
       try{ fin(URL.createObjectURL(pngEmbedKey(url,cfg)),true); }catch(e){ fin(url,false); } }); }
 
@@ -556,7 +556,7 @@
 
   // cross-page link + City Key (palette + per-vertex descriptions)
   let _bc=null,_bcLast=-1,_bcMute=false, DESC={}, keyName='', FIGURES=null, PKTS=null, DID=null,
-      PRIOR_IN=null, LOADED_CANON=null, LOADED_KAPPA=null;
+      PRIOR_IN=null, LOADED_CANON=null, LOADED_KAPPA=null, CARRIED={}, LOAD_EPOCH=0, LOAD_READY=Promise.resolve();
   // PKTS / DID — trust-task fields minted at /city (packets Merkle digest · bearer did):
   // round-tripped untouched so a walk never destroys them (content — inside the κ preimage).
   // PRIOR_IN / LOADED_* — the κ-chain: an unchanged re-export carries its prior through
@@ -626,7 +626,13 @@
     const ov=num(f.overlap), ra=num(f.ratio);
     return { eps: ov===null?state.eps:+(0.6*(1-cl(ov,0,1))).toFixed(3), m:state.m, n:state.n,
              core: ov===null?state.core:cl(ov,0.25,0.85), smRatio: ra===null?state.smRatio:cl(ra,1,2.2) }; }
-  function loadConfig(cfg,fromRemote){ if(!cfg||typeof cfg!=='object')return;
+  function loadConfig(cfg,fromRemote){ if(!cfg||typeof cfg!=='object'||Array.isArray(cfg))return;
+    // Full keys carry opaque extensions; only this surface's reading fields are rebuilt.
+    CARRIED={...cfg};
+    for(const field of ["name","version","palette","descriptions","geometry","lit","identity","trace","figures","packets","did","kappa","prior"]) delete CARRIED[field];
+    DESC={};
+    TRACE_PROOF=null; laps=0; traceSeconds=0; tourSeconds=0;
+    { const tl=gid('tracerLaps'); if(tl) tl.textContent='0'; }
     FIGURES=(cfg.figures&&typeof cfg.figures==='object')?cfg.figures:null;
     PKTS=(cfg.packets&&typeof cfg.packets==='object')?cfg.packets:null;
     DID=(typeof cfg.did==='string')?cfg.did:null;
@@ -656,9 +662,11 @@
     keyName=cfg.name||'imported key'; gid('keyName').innerHTML='key: <b>'+esc(keyName)+'</b>'+(FIGURES?' <span style="color:#7fffd4" title="geometry derived from measured figures (FIG-2.0) — sliders are what-if; export re-derives">· 📐 measured</span>':'')+identityHtml(IDENT); _lastX=-1; updateDesc(); verifyKappa(cfg);
     PRIOR_IN=(typeof cfg.prior==='string')?cfg.prior:null;
     { const c={...cfg}; delete c.kappa; delete c.prior; LOADED_CANON=canonicalJSON(c); }
-    LOADED_KAPPA=null; kappaLabel(cfg).then(k=>{ LOADED_KAPPA=k||((typeof cfg.kappa==='string')?cfg.kappa:null); });
+    LOADED_KAPPA=null;
+    const epoch=++LOAD_EPOCH;
+    LOAD_READY=kappaLabel(cfg).then(k=>{ if(epoch===LOAD_EPOCH) LOADED_KAPPA=k||((typeof cfg.kappa==='string')?cfg.kappa:null); });
     if(!fromRemote&&_bc){ try{ _bc.postMessage({config:cfg,src:'manifold'}); }catch(e){} } }
-  function buildExportCfg(){ const cfg={ name:keyName||'city key', version:1,
+  function buildExportCfg(){ const cfg={ ...CARRIED, name:keyName||'city key', version:1,
       palette:{cool:state.coolHex,warm:state.warmHex,sword:state.swordHex,mage:state.mageHex}, descriptions:{...DESC},
       // the shape rides in the key (field reserved in the 2026-05-27 interop, filled 2026-06-10):
       // r(θ,φ) = R + ε sin(mφ) cos(nθ) · det(Σ) core · ⚔️:🧙 ratio (φ ↔ C1)
@@ -672,7 +680,9 @@
     const prior=(LOADED_CANON!==null && canonicalJSON(cfg)!==LOADED_CANON)?LOADED_KAPPA:PRIOR_IN;
     if(prior) cfg.prior=prior;                  // κ-chain — the key this one evolved from (C87: the key accumulates)
     return cfg; }
-  function exportKey(){ const cfg=buildExportCfg();
+  // Wait for the current import's identity; a newer import invalidates older hash work.
+  async function readyExportCfg(){ let epoch; do { epoch=LOAD_EPOCH; await LOAD_READY; } while(epoch!==LOAD_EPOCH); return buildExportCfg(); }
+  async function exportKey(){ const cfg=await readyExportCfg();
     kappaLabel(cfg).then(k=>{ if(k) cfg.kappa=k; // the key's content identity, stamped at export
       const blob=new Blob([JSON.stringify(cfg,null,2)],{type:'application/json'}),a=document.createElement('a');
       a.href=URL.createObjectURL(blob); a.download='city-key.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }); }
