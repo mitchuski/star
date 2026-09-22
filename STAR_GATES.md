@@ -221,3 +221,38 @@ gate is signed.
 
 (⚔️⊥⿻⊥🧙)😊 — proposed by the runtime, 2026-07-10; every signature here is
 the First Person's.
+
+---
+
+## S2 · SYSTEMS — proposed 2026-09-21 (working tree only, both homes, all revertible)
+
+1. `/star` reads two more key fields as a **charged layer**: spellweb's `lattice` (per-vertex charge
+   weights, written by its accumulator tape) and /city's poured `focus`. Drawn as a Mage-coloured
+   halo (`latCharged`, size 0.13, intensity by weight) beside the point; `lit` keeps the Swordsman's
+   achievement colour on the point itself. The key-name line gains `· ⚡ N charged`; the inspector
+   names the weight. Nothing is derived or scored; the fields were already carried in and out
+   untouched (CARRIED) — they were simply never drawn, which is why a spellweb export imported here
+   showed no contribution on any vertex. Mirrored to `star/star/index.html` (parity kept).
+2. spellweb's wandering orbs take their motion from the equipped key's `geometry` (ε·sin(mφ)·cos(nθ)
+   breathes the separation, `core` sets the ellipse, `smRatio` places ⚔️ and 🧙 at their ratio, `n`
+   sets the pace; the learned-spell and blade-mark orbiters ride the same stance) and their colours
+   from its palette. The equipped mark between the orbs is the **stella octangula drawn in three
+   dimensions**, turning with the orbit (two projected tetrahedra, sword and mage colours, depth-shaded) —
+   the earlier flat pair of triangles was the figure's silhouette down a body diagonal, i.e. a hexagram,
+   and the keeper asked for a different dimension (2026-09-21, later). The floating "✦ Equipped Star" label is removed — the shape and the colours are
+   the sign; the panel's own ✦ Star launcher remains the door.
+3. A practice key carrying `lattice`, `focus` and a non-default `geometry`:
+   `soulbis website/star-experiment/practice-city-key.charged.json` (synthetic; no κ, derives one on import).
+
+✍️ S2 decision: OPEN — awaiting the First Person's read.
+4. **Interop measured, 2026-09-21 (later).** Before today only a Strike in spellweb's Item Lattice
+   view charged a vertex; tracing, forging, holding and binding wrote loadout entries that Sync Star
+   copied into the key as an opaque `spellwebLoadout` block with no vertex, so `/star` could not
+   place them. Sync Star now folds the loadout onto the tape first (`loadoutCharges` in
+   `spellweb/src/lib/starLoadout.ts`: an equipped item at its node's vertex, a forged blade at each
+   distinct vertex its marks touch, a held constellation and a bound familiar at their keeper mage's
+   vertex; idempotent by charge source; unresolvable marks skipped, never guessed), so `lattice`
+   carries them and the charged layer draws them. End-to-end run in node against the page's own
+   reading code: a /star practice key → import (lit → import charges) → strike → fold a synthetic
+   loadout → export → κ re-derives, `prior` chains, `lit` and palette ride through, 8 charged
+   vertices read back with exact weights, second sync folds nothing. 16/16.
